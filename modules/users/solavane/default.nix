@@ -41,6 +41,7 @@ in
   flake.modules.homeManager."users-${userName}-desktop" = {
     imports = with flakeModules.homeManager; [
       kitty
+      obsidian
       opencode
       prismlauncher
       vesktop

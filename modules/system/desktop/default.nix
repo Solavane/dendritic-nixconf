@@ -12,6 +12,7 @@
       dolphin
       ly
       mango
+      obsidian
     ];
   };
 }
