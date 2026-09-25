@@ -9,6 +9,7 @@
       building
       cli
       core
+      ly
       mango
     ];
   };

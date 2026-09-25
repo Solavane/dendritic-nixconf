@@ -7,13 +7,15 @@ let
 in
 {
   flake.modules.nixos.cli = { pkgs, ... }: { 
-    # Shell
-    programs.zsh.enable = true;
-    
-    # Launch non-installed commands through ", firefox"
-    programs.comma = {
-      enable = true;
-      enableZshIntegration = true;
+    programs = {
+      # Shell
+      zsh.enable = true;
+
+      # Launch non-installed commands through ", firefox"
+      comma = {
+        enable = true;
+        enableZshIntegration = true;
+      };
     };
 
     environment.systemPackages = with pkgs; [
@@ -31,5 +33,38 @@ in
       neovim
       zellij
     ];
+
+    programs = {
+      zsh = {
+        enable = true;
+        enableCompletion = true;
+        autosuggestion.enable = true;
+        syntaxHighlighting.enable = true;
+        dotDir = "${config.xdg.configHome}/zsh";
+        shellAliases = ./_aliases.nix;
+
+        setOptions = [
+        ];
+
+        initContent = ''
+        nitch
+        '';
+      };
+
+      eza = {
+        enable = true;
+        enableZshIntegration = true;
+      };
+
+      fzf = {
+        enable = true;
+        enableZshIntegration = true;
+      };
+
+      zoxide = {
+        enable = true;
+        enableZshIntegration = true;
+      };
+    };
   };
 }
