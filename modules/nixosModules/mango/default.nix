@@ -51,7 +51,12 @@
         drag_corner = 4;
         no_border_when_single = 0;
         no_radius_when_single = 0;
-        
+
+        monitorrule = [
+          "name:DP-1,     width:2560, height:1440, refresh:240, x:0, y:0, vrr:0"
+          "name:DP-2,     width:2560, height:1440, refresh:60, x:2560, y:0, vrr:0"
+          "name:HDMI-A-1, width:2560, height:1440, refresh:120,  x:0,    y:0"
+        ];  
 
         tagrule = [
           "id:0, layout_name:dwindle"
@@ -80,7 +85,7 @@
           "SUPER+alt,Up,incgaps,+2"
           "SUPER+alt,Down,incgaps,-2"
 
-          "SUPER,d,spawn,noctalia ipc call launcher toggle"
+          "SUPER,d,spawn,noctalia msg panel-toggle launcher"
 
           # Workspace Navigation
           "Super,1,view,1"
@@ -152,6 +157,7 @@
           # Custom Applications
           "SUPER,Return,spawn,kitty"
           "SUPER,e,spawn,thunar"
+          "SUPER,b,spawn,zen"
         ];
 
         # Mouse Bindings

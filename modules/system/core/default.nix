@@ -35,6 +35,10 @@
       dconf.enable = true;
     };
 
+    fonts.packages = [
+      pkgs.nerd-fonts.jetbrains-mono
+    ];
+
     # Allows unprivileged processes to speak to privileged ones
     security.polkit.enable = true;
   };
