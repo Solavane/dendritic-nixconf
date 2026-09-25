@@ -41,9 +41,10 @@ in
   flake.modules.homeManager."users-${userName}-desktop" = {
     imports = with flakeModules.homeManager; [
       kitty
-      zen-browser
-      vesktop
+      opencode
       prismlauncher
+      vesktop
+      zen-browser
     ];
     
     modules.homeManager.prismlauncher.jdk = lib.mkDefault [ "jdk25" "jdk21" ];

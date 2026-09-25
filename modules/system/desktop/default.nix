@@ -9,6 +9,7 @@
       building
       cli
       core
+      dolphin
       ly
       mango
     ];

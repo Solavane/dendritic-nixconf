@@ -156,7 +156,7 @@
 
           # Custom Applications
           "SUPER,Return,spawn,kitty"
-          "SUPER,e,spawn,thunar"
+          "SUPER,e,spawn,dolphin"
           "SUPER,b,spawn,zen"
         ];
 
