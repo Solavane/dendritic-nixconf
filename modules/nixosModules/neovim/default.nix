@@ -1,17 +1,17 @@
 {
-  pkgs,
   ...
 }:
-let
-  love2d-api = pkgs.fetchFromGitHub {
-    owner = "LuaCATS";
-    repo  = "love2d";
-    rev   = "main";
-    hash  = "sha256-Mjp2ECqtyW/bLsDz1vgDDsX2CVIQ04Cx1xawzpQjoK8=";
-  };
-in {
-  flake.modules.homeManager.neovim = {
-
+{
+  flake.modules.homeManager.neovim = { pkgs, ... }:
+  let
+    love2d-api = pkgs.fetchFromGitHub {
+      owner = "LuaCATS";
+      repo  = "love2d";
+      rev   = "main";
+      hash  = "sha256-Mjp2ECqtyW/bLsDz1vgDDsX2CVIQ04Cx1xawzpQjoK8=";
+    };
+  in
+  {
     programs.neovim = {
 
       enable         = true;

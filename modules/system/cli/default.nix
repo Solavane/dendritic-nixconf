@@ -1,10 +1,12 @@
 {
-  flake.modules.nixos.cli = { config, pkgs, ... }: { 
-    imports = with config.flake.modules.nixos; [
-      nvim
-      zellij
-    ];
-
+  config,
+  ...
+}:
+let
+  flakeModules = config.flake.modules;
+in
+{
+  flake.modules.nixos.cli = { pkgs, ... }: { 
     # Shell
     programs.zsh.enable = true;
     
@@ -23,7 +25,11 @@
       zip
     ];
   };
-  flake.modules.homeManager.cli = {
 
+  flake.modules.homeManager.cli = {
+    imports = with flakeModules.homeManager; [
+      neovim
+      zellij
+    ];
   };
 }

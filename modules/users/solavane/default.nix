@@ -45,6 +45,6 @@ in
       prismlauncher
     ];
     
-    modules.homeManager.prismlauncher.jdk = lib.mkDefault [ "jdk26" "jdk21" ];
+    modules.homeManager.prismlauncher.jdk = lib.mkDefault [ "jdk25" "jdk21" ];
   };
 }

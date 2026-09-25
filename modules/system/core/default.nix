@@ -1,9 +1,8 @@
 {
-  pkgs,
   ...
 }:
 {
-  flake.modules.nixos.core = {
+  flake.modules.nixos.core = { pkgs, ... }: {
     nix.settings = {
       experimental-features = [ "nix-command" "flakes" ];
       deprecated-features   = [ "or-as-identifier" ];
