@@ -43,6 +43,7 @@ in
       ./_hardware-configuration.nix
       desktop
       hostConfig
+      localsend
       nvidia
       optimizations
       
