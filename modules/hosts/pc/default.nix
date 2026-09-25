@@ -46,6 +46,7 @@ in
       localsend
       nvidia
       optimizations
+      steam
       
       #users
       users-solavane
