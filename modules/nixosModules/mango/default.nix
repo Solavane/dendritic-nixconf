@@ -28,8 +28,31 @@
     ];
     wayland.windowManager.mango = {
       enable = true;
+      autostart_sh = ''
+        noctalia &
+        systemctl --user start xdg-desktop-portal.service --ignore-dependencies #Screensharing fix until they update and fix this bs
+      '';
       settings = {
+        repeat_rate=50;
+        repeat_delay=250;
+        xkb_rules_layout="se";
+
+        mouse_accel_profile = 0;
+        mouse_accel_speed = -1;
+        cursor_hide_on_keypress = 0;
+
+        trackpad_accel_profile = 2;
+        trackpad_accel_speed = 0.7;
+
+        syncobj_enable = 1;
+        focus_on_activate = 0;
+        focus_cross_tag = 1;
+        drag_tile_to_tile = 1;
+        drag_corner = 4;
+        no_border_when_single = 0;
+        no_radius_when_single = 0;
         
+
         tagrule = [
           "id:0, layout_name:dwindle"
           "id:1, layout_name:dwindle"
@@ -56,6 +79,8 @@
           "SUPER,s,toggle_scratchpad"
           "SUPER+alt,Up,incgaps,+2"
           "SUPER+alt,Down,incgaps,-2"
+
+          "SUPER,d,spawn,noctalia ipc call launcher toggle"
 
           # Workspace Navigation
           "Super,1,view,1"
@@ -125,8 +150,8 @@
           "SUPER,w,spawn,wallpaper-menu"
 
           # Custom Applications
-          "SUPER,Return,spawn,foot"
-          "SUPER,e,spawn,pcmanfm"
+          "SUPER,Return,spawn,kitty"
+          "SUPER,e,spawn,thunar"
         ];
 
         # Mouse Bindings

@@ -28,7 +28,7 @@ in
     ];
   };
 
-  flake.modules.homeManager.cli = {
+  flake.modules.homeManager.cli = { config, ... }: {
     imports = with flakeModules.homeManager; [
       neovim
       zellij
@@ -41,7 +41,7 @@ in
         autosuggestion.enable = true;
         syntaxHighlighting.enable = true;
         dotDir = "${config.xdg.configHome}/zsh";
-        shellAliases = ./_aliases.nix;
+        shellAliases = import ./_aliases.nix;
 
         setOptions = [
         ];

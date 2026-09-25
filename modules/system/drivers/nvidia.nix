@@ -11,7 +11,7 @@
       powerManagement.enable  = lib.mkDefault true; # enable if you see sleep/wake issues
       open                    = lib.mkDefault true;
       nvidiaSettings          = false;
-      package                 = lib.mkDefault config.boot.kernelPackages.nvidiaPackages.beta;
+      package                 = lib.mkDefault config.boot.kernelPackages.nvidiaPackages.stable;
     };
 
     hardware.graphics.enable = true;
