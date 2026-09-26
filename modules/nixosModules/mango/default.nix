@@ -30,7 +30,7 @@
       enable = true;
       autostart_sh = ''
         noctalia &
-        systemctl --user start xdg-desktop-portal.service --ignore-dependencies #Screensharing fix until they update and fix this bs
+        systemctl --user start xdg-desktop-portal.service --ignore-dependencies
       '';
       settings = {
         repeat_rate=50;

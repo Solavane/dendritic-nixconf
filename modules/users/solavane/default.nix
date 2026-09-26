@@ -40,10 +40,12 @@ in
 
   flake.modules.homeManager."users-${userName}-desktop" = {
     imports = with flakeModules.homeManager; [
+      keepassxc
       kitty
       obsidian
       opencode
       prismlauncher
+      syncthing
       vesktop
       zen-browser
     ];
