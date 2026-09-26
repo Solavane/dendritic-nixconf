@@ -41,6 +41,7 @@ in
   flake.modules.homeManager."users-${userName}-desktop" = {
     imports = with flakeModules.homeManager; [
       blender
+      faugus
       keepassxc
       kitty
       obsidian
