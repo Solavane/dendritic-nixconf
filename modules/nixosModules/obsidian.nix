@@ -3,9 +3,6 @@
   ...
 }:
 {
-  # The overlay has to live on the system pkgs: home-manager runs with
-  # `useGlobalPkgs = true`, so the HM `pkgs` below only sees overlays that were
-  # applied through the `nixpkgs` module.
   flake.modules.nixos.obsidian = { ... }: {
     nixpkgs.overlays = [
       inputs.obsidian-extensions.overlays.default

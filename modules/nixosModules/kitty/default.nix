@@ -1,7 +1,4 @@
 {
-  ...
-}:
-{
   flake.modules.homeManager.kitty = { config, ... }: {
     programs.kitty = {
       enable = true;

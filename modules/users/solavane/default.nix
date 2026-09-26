@@ -40,6 +40,7 @@ in
 
   flake.modules.homeManager."users-${userName}-desktop" = {
     imports = with flakeModules.homeManager; [
+      blender
       keepassxc
       kitty
       obsidian
