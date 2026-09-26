@@ -45,6 +45,22 @@
         set clipboard=unnamedplus 
       '';
 
+      initLua = ''
+        local ok, colors = pcall(require, "theme-colors")
+        if ok then
+          vim.api.nvim_set_hl(0, "Normal",          { bg = colors.bg, fg = colors.fg })
+          vim.api.nvim_set_hl(0, "CursorLine",      { bg = colors.bg_alt })
+          vim.api.nvim_set_hl(0, "Visual",          { bg = colors.primary, fg = colors.on_primary })
+          vim.api.nvim_set_hl(0, "Comment",         { fg = colors.fg_alt, italic = true })
+          vim.api.nvim_set_hl(0, "String",          { fg = colors.green })
+          vim.api.nvim_set_hl(0, "Function",        { fg = colors.blue })
+          vim.api.nvim_set_hl(0, "Keyword",         { fg = colors.magenta })
+          vim.api.nvim_set_hl(0, "Type",            { fg = colors.yellow })
+          vim.api.nvim_set_hl(0, "Constant",        { fg = colors.orange })
+          vim.api.nvim_set_hl(0, "DiagnosticError", { fg = colors.error })
+        end
+      '';
+
       plugins = [
         {
           plugin = pkgs.vimPlugins.nvim-tree-lua;

@@ -169,7 +169,9 @@
           "SUPER,btn_middle,togglemaximizescreen,0"
         ];
 
-        bottomPrefixes = [
+        source = [
+          "./noctalia.conf"
+          "./monitors.conf"
         ];
       };
     };

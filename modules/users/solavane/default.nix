@@ -45,6 +45,7 @@ in
       obsidian
       opencode
       prismlauncher
+      spicetify
       syncthing
       vesktop
       zen-browser

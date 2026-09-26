@@ -3,8 +3,7 @@
   ...
 }:
 {
-
-  flake.modules.nixos.desktop = {
+  flake.modules.nixos.desktop = { pkgs, ... }: {
     imports = with config.flake.modules.nixos; [
       building
       cli
@@ -13,6 +12,12 @@
       ly
       mango
       obsidian
+    ];
+
+    environment.systemPackages = with pkgs; [
+      wlr-randr
+      wl-mirror
+      wdisplays
     ];
   };
 }
