@@ -46,6 +46,7 @@ in
       obsidian
       opencode
       prismlauncher
+      prusa-slicer
       spicetify
       syncthing
       vesktop
