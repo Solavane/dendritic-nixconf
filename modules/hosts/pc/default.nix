@@ -41,11 +41,13 @@ in
     modules = with config.flake.modules.nixos; [
       # System
       ./_hardware-configuration.nix
+      comfyui
       desktop
       hostConfig
       localsend
       nvidia
       optimizations
+      optimizations-lact
       steam
       
       #users
