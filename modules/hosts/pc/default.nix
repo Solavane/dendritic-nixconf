@@ -43,6 +43,7 @@ in
       ./_hardware-configuration.nix
       comfyui
       desktop
+      flatpak
       hostConfig
       localsend
       nvidia

@@ -52,6 +52,8 @@ in
       syncthing
       vesktop
       zen-browser
+
+      flatpak
     ];
     
     modules.homeManager.prismlauncher.jdk = lib.mkDefault [ "jdk25" "jdk21" ];
