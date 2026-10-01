@@ -12,7 +12,7 @@ in
   flake.modules.nixos."users-${userName}" = { pkgs, ... }: {
     users.users.${userName} = {
       isNormalUser = true;
-      extraGroups = [ "wheel" "networkmanager" ];
+      extraGroups = [ "audio" "wheel" "networkmanager" ];
       shell = pkgs.zsh;
     };
 
@@ -42,6 +42,7 @@ in
     imports = with flakeModules.homeManager; [
       blender
       faugus
+      fl-studio
       keepassxc
       kitty
       obsidian

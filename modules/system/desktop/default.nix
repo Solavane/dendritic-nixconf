@@ -12,6 +12,7 @@
       ly
       mango
       obsidian
+      pipewire
     ];
 
     environment.systemPackages = with pkgs; [
