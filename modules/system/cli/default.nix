@@ -48,6 +48,7 @@ in
 
         initContent = ''
         nitch
+        source ${config.xdg.configHome}/zsh/add-eq.sh
         '';
       };
 
@@ -65,6 +66,12 @@ in
         enable = true;
         enableZshIntegration = true;
       };
+    };
+
+    # add-eq lives as a real file so it stays readable and editable
+    xdg = {
+      enable = true;
+      configFile."zsh/add-eq.sh".source = ./_add-eq.sh;
     };
   };
 }

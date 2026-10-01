@@ -43,6 +43,7 @@ in
       ./_hardware-configuration.nix
       comfyui
       desktop
+      equalizer-lcd-2c
       flatpak
       hostConfig
       localsend
