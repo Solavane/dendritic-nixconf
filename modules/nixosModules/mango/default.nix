@@ -85,29 +85,39 @@
           "SUPER+alt,Up,incgaps,+2"
           "SUPER+alt,Down,incgaps,-2"
 
+          # Noctalia
           "SUPER,d,spawn,noctalia msg panel-toggle launcher"
+          "SUPER,c,spawn,noctalia msg panel-toggle control-center"
+          "SUPER,comma,spawn,noctalia msg settings-toggle"
+          "SUPER,v,spawn,noctalia msg panel-toggle clipboard"
+          "SUPER+shift,v,spawn,noctalia msg panel-toggle wallpaper"
+          "SUPER+shift,s,spawn,noctalia msg panel-toggle session"
+          "SUPER+shift,l,spawn,noctalia msg theme-mode-toggle"
+          "SUPER+shift,n,spawn,noctalia msg notification-dnd-toggle"
+          "SUPER+alt,w,spawn,noctalia msg wallpaper-random"
+          "SUPER+alt,c,spawn,noctalia msg caffeine-toggle"
 
           # Workspace Navigation
-          "Super,1,view,1"
-          "Super,2,view,2"
-          "Super,3,view,3"
-          "Super,4,view,4"
-          "Super,5,view,5"
-          "Super,6,view,6"
-          "Super,7,view,7"
-          "Super,8,view,8"
-          "Super,9,view,9"
+          "SUPER,1,view,1"
+          "SUPER,2,view,2"
+          "SUPER,3,view,3"
+          "SUPER,4,view,4"
+          "SUPER,5,view,5"
+          "SUPER,6,view,6"
+          "SUPER,7,view,7"
+          "SUPER,8,view,8"
+          "SUPER,9,view,9"
 
           # Move to Workspace
-          "ctrl+Super,1,tag,1"
-          "ctrl+Super,2,tag,2"
-          "ctrl+Super,3,tag,3"
-          "ctrl+Super,4,tag,4"
-          "ctrl+Super,5,tag,5"
-          "ctrl+Super,6,tag,6"
-          "ctrl+Super,7,tag,7"
-          "ctrl+Super,8,tag,8"
-          "ctrl+Super,9,tag,9"
+          "CTRL+SUPER,1,tag,1"
+          "CTRL+SUPER,2,tag,2"
+          "CTRL+SUPER,3,tag,3"
+          "CTRL+SUPER,4,tag,4"
+          "CTRL+SUPER,5,tag,5"
+          "CTRL+SUPER,6,tag,6"
+          "CTRL+SUPER,7,tag,7"
+          "CTRL+SUPER,8,tag,8"
+          "CTRL+SUPER,9,tag,9"
 
           # Overview
           "SUPER,Tab,toggleoverview"
@@ -135,24 +145,24 @@
           "SUPER,n,switch_layout"
 
           # Screenshots
-          "SHIFT,Print,spawn,$HOME/.config/mango/scripts/screenshot.sh fullscreen"
-          "NONE,Print,spawn,$HOME/.config/mango/scripts/screenshot.sh region"
-          "CTRL,Print,spawn,$HOME/.config/mango/scripts/screenshot.sh window"
-          "SUPER,Print,spawn,$HOME/.config/mango/scripts/screenshot.sh annotate"
+          "NONE,Print,spawn,noctalia msg screenshot-region"
+          "SHIFT,Print,spawn,noctalia msg screenshot-fullscreen"
+          "CTRL,Print,spawn,noctalia msg screenshot-annotate"
 
           # Volume Controls
-          "NONE,XF86AudioRaiseVolume,spawn,wpctl set-volume @DEFAULT_SINK@ 5%+"
-          "NONE,XF86AudioLowerVolume,spawn,wpctl set-volume @DEFAULT_SINK@ 5%-"
-          "NONE,XF86AudioMute,spawn,wpctl set-mute @DEFAULT_SINK@ toggle"
-          "SHIFT,XF86AudioMute,spawn,wpctl set-mute @DEFAULT_SOURCE@ toggle"
+          "NONE,XF86AudioRaiseVolume,spawn,noctalia msg volume-up"
+          "NONE,XF86AudioLowerVolume,spawn,noctalia msg volume-down"
+          "NONE,XF86AudioMute,spawn,noctalia msg volume-mute"
+          "SHIFT,XF86AudioMute,spawn,noctalia msg mic-mute"
+
+          # Brightness
+          "NONE,XF86MonBrightnessUp,spawn,noctalia msg brightness-up"
+          "NONE,XF86MonBrightnessDown,spawn,noctalia msg brightness-down"
 
           # Media Playback
-          "NONE,XF86AudioNext,spawn,playerctl next"
-          "NONE,XF86AudioPrev,spawn,playerctl previous"
-          "NONE,XF86AudioPlay,spawn,playerctl play-pause"
-
-          # Theming
-          "SUPER,w,spawn,wallpaper-menu"
+          "NONE,XF86AudioNext,spawn,noctalia msg media next"
+          "NONE,XF86AudioPrev,spawn,noctalia msg media previous"
+          "NONE,XF86AudioPlay,spawn,noctalia msg media toggle"
 
           # Custom Applications
           "SUPER,Return,spawn,kitty"

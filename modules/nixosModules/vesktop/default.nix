@@ -32,7 +32,7 @@
             UserMessagesPronouns.enabled = true;
             ViewIcons.enabled = true;
             VoiceDownload.enabled = true;
-            VoumeBooster = true;
+            VoulumeBooster = true;
             WebKeybinds = true;
             WebScreenShareFixes = true;
             YoutubeAdblock.enabled = true;
