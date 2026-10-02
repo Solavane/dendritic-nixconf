@@ -56,7 +56,22 @@ in
 
       flatpak
     ];
-    
+
     modules.homeManager.prismlauncher.jdk = lib.mkDefault [ "jdk25" "jdk21" ];
+    modules.homeManager.zen-browser = {
+      allowedCookieSites = [
+        "https://google.com"
+        "https://duckduckgo.com"
+        "https://github.com"
+        "https://spotify.com"
+        "https://twitch.tv"
+        "https://youtube.com"
+        "https://oraclecloud.com"
+      ];
+      uBlockBlocklist = [
+        "www.youtube.com##ytd-rich-section-renderer.ytd-rich-grid-renderer.style-scope"
+        "dashboard.twitch.tv##.cmdNOM.Layout-sc-1xcs6mc-0"
+      ];
+    };
   };
 }
