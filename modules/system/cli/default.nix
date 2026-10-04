@@ -28,7 +28,7 @@ in
     ];
   };
 
-  flake.modules.homeManager.cli = { config, ... }: {
+  flake.modules.homeManager.cli = { config, osConfig, pkgs, ... }: {
     imports = with flakeModules.homeManager; [
       neovim
       zellij
@@ -50,6 +50,15 @@ in
         nitch
         source ${config.xdg.configHome}/zsh/add-eq.sh
         '';
+      };
+
+      btop = {
+        enable = true;
+        package =
+          if (osConfig.modules.nixos.nvidia.enable or false) then
+            pkgs.btop-cuda
+          else
+            pkgs.btop;
       };
 
       eza = {
