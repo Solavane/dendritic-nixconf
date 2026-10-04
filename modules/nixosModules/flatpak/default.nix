@@ -17,6 +17,7 @@
 
       packages = [
         "org.vinegarhq.Sober"
+        "org.vinegarhq.Vinegar"
       ];
 
       update.onActivation = true;
