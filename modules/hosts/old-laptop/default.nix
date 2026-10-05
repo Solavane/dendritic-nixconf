@@ -10,27 +10,30 @@ let
   hostConfig = { pkgs, ... }: {
     networking.hostName = hostName;
     system.stateVersion = "25.11";
-    
+
     boot.loader = {
-      systemd-boot.enable = true;
-      efi.canTouchEfiVariables = true;
-    };
-
-    fileSystems."/" = {
-      options = [ "subvol=@" "compress=zstd:1" "noatime" "discard=async" ];
-    };  
-    fileSystems."/home" = {
-      options = [ "subvol=@home" "compress=zstd:1" "noatime" ];
-    };
-
-    boot.kernelPackages = pkgs.linuxPackages_zen;
-
-    services = {
-      undervolt = {
+      systemd-boot.enable = false;
+      grub = {
         enable = true;
-        coreOffset = -80;
+        device = "/dev/sda";
       };
     };
+
+    boot.kernelPackages = pkgs.linuxPackages_latest;
+
+    zramSwap = {
+      enable = true;
+      memoryPercent = 50;
+    };
+
+    hardware.graphics = {
+      enable = true;
+      enable32Bit = true;
+    };
+
+    environment.systemPackages = with pkgs; [
+      acpi # Battery / power state inspector
+    ];
   };
 in
 {
@@ -41,21 +44,18 @@ in
     modules = with config.flake.modules.nixos; [
       # System
       ./_hardware-configuration.nix
-      comfyui
       desktop
-      equalizer-lcd-2c
       flatpak
       hostConfig
       localsend
-      nvidia
+      mango-old-laptop
+      network
       optimizations
-      optimizations-lact
       steam
-      
+
       #users
       users-solavane
       users-solavane-desktop
-      users-solavane-pc
     ];
   };
 }

@@ -27,6 +27,13 @@ in
       flakeModules.homeManager."users-${userName}-desktop"
     ];
   };
+
+  flake.modules.nixos."users-${userName}-pc" = {
+    home-manager.sharedModules = [
+      flakeModules.homeManager."users-${userName}-pc"
+    ];
+  };
+
   
   flake.modules.homeManager."users-${userName}" = {
     home.username = "${userName}";
@@ -40,21 +47,16 @@ in
 
   flake.modules.homeManager."users-${userName}-desktop" = {
     imports = with flakeModules.homeManager; [
-      blender
-      faugus
-      fl-studio
       keepassxc
       kitty
+      love
       obsidian
       opencode
-      prismlauncher
       prusa-slicer
       spicetify
       syncthing
       vesktop
       zen-browser
-
-      flatpak
     ];
 
     modules.homeManager.prismlauncher.jdk = lib.mkDefault [ "jdk25" "jdk21" ];
@@ -73,5 +75,16 @@ in
         "dashboard.twitch.tv##.cmdNOM.Layout-sc-1xcs6mc-0"
       ];
     };
+  };
+
+  flake.modules.homeManager."users-${userName}-pc" = {
+    imports = with flakeModules.homeManager; [
+      blender
+      faugus
+      fl-studio
+      prismlauncher
+
+      flatpak
+    ];
   };
 }
