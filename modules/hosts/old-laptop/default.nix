@@ -48,7 +48,6 @@ in
       flatpak
       hostConfig
       localsend
-      mango-old-laptop
       network
       optimizations
       steam

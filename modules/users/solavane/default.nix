@@ -47,6 +47,7 @@ in
 
   flake.modules.homeManager."users-${userName}-desktop" = {
     imports = with flakeModules.homeManager; [
+      foot
       keepassxc
       kitty
       love
@@ -59,7 +60,6 @@ in
       zen-browser
     ];
 
-    modules.homeManager.prismlauncher.jdk = lib.mkDefault [ "jdk25" "jdk21" ];
     modules.homeManager.zen-browser = {
       allowedCookieSites = [
         "https://google.com"
@@ -86,5 +86,7 @@ in
 
       flatpak
     ];
+
+    modules.homeManager.prismlauncher.jdk = lib.mkDefault [ "jdk25" "jdk21" ];
   };
 }
