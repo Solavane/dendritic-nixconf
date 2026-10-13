@@ -44,7 +44,8 @@
         trackpad_accel_profile = 2;
         trackpad_accel_speed = 0.7;
 
-        syncobj_enable = 1;
+        sync_obj_enable = 1;
+        auto_reload_config = 1;
         focus_on_activate = 0;
         focus_cross_tag = 1;
         drag_tile_to_tile = 1;
@@ -52,13 +53,13 @@
         no_border_when_single = 0;
         no_radius_when_single = 0;
 
-        monitorrule = [
+        monitor_rule = [
           "name:DP-1,     width:2560, height:1440, refresh:240, x:0, y:0, vrr:0"
           "name:DP-2,     width:2560, height:1440, refresh:60, x:2560, y:0, vrr:0"
           "name:HDMI-A-1, width:2560, height:1440, refresh:120,  x:0,    y:0"
         ];  
 
-        tagrule = [
+        tag_rule = [
           "id:0, layout_name:dwindle"
           "id:1, layout_name:dwindle"
           "id:2, layout_name:dwindle"
