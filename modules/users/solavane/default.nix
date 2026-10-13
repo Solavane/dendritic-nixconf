@@ -53,6 +53,7 @@ in
     
     imports = with flakeModules.homeManager; [
       cli
+      syncthing
     ];
   };
 
@@ -65,7 +66,6 @@ in
       opencode
       prusa-slicer
       spicetify
-      syncthing
       vesktop
       zen-browser
     ];
@@ -99,17 +99,31 @@ in
     ];
 
     modules.homeManager.prismlauncher.jdk = lib.mkDefault [ "jdk25" "jdk21" ];
+
+    modules.homeManager.syncthing = {
+      enable = true;
+      devices = [ "pixel-8-pro" ];
+      folders = "all";
+    };
   };
 
   flake.modules.homeManager."users-${userName}-old-laptop" = {
     imports = with flakeModules.homeManager; [
       foot
     ];
+
+    modules.homeManager.syncthing = {
+      enable = true;
+      devices = [ "pixel-8-pro" ];
+      folders = "all";
+    };
   };
 
   flake.modules.homeManager."users-${userName}-dell-laptop" = {
-    imports = with flakeModules.homeManager; [
-      syncthing
-    ];
+    modules.homeManager.syncthing = {
+      enable = true;
+      devices = "all";
+      folders = "all";
+    };
   };
 }
