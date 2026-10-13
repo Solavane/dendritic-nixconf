@@ -4,17 +4,25 @@
   ...
 }:
 {
-  flake.modules.nixos.mango = { ... }: {
+  flake.modules.nixos.mango = { pkgs, ... }: {
     imports = [
       inputs.mango.nixosModules.mango
     ];
     programs.mango.enable = true;
     programs.noctalia.enable = true;
 
+    environment.systemPackages = [ pkgs.fuzzel ];
+
     xdg.portal = {
       enable = true;
       extraPortals = [ ];  
-      wlr.enable = true;
+      wlr = {
+        enable = true;
+        settings.screencast = {
+          chooser_type = "dmenu";
+          chooser_cmd = "${pkgs.fuzzel}/bin/fuzzel -d -l 10 -p 'Select a source to share:'";
+        };
+      };
     };
 
     home-manager.sharedModules = [
