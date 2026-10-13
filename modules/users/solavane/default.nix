@@ -39,6 +39,12 @@ in
       flakeModules.homeManager."users-${userName}-old-laptop"
     ];
   };
+
+  flake.modules.nixos."users-${userName}-dell-laptop" = {
+    home-manager.sharedModules = [
+      flakeModules.homeManager."users-${userName}-dell-laptop"
+    ];
+  };
   
   flake.modules.homeManager."users-${userName}" = {
     home.username = "${userName}";
@@ -98,6 +104,12 @@ in
   flake.modules.homeManager."users-${userName}-old-laptop" = {
     imports = with flakeModules.homeManager; [
       foot
+    ];
+  };
+
+  flake.modules.homeManager."users-${userName}-dell-laptop" = {
+    imports = with flakeModules.homeManager; [
+      syncthing
     ];
   };
 }
