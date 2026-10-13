@@ -86,6 +86,7 @@ in
       blender
       faugus
       fl-studio
+      obs
       prismlauncher
 
       flatpak
