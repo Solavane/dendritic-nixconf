@@ -55,6 +55,7 @@ in
       #users
       users-solavane
       users-solavane-desktop
+      users-solavane-old-laptop
     ];
   };
 }

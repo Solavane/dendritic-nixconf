@@ -34,6 +34,11 @@ in
     ];
   };
 
+  flake.modules.nixos."users-${userName}-old-laptop" = {
+    home-manager.sharedModules = [
+      flakeModules.homeManager."users-${userName}-old-laptop"
+    ];
+  };
   
   flake.modules.homeManager."users-${userName}" = {
     home.username = "${userName}";
@@ -47,7 +52,6 @@ in
 
   flake.modules.homeManager."users-${userName}-desktop" = {
     imports = with flakeModules.homeManager; [
-      foot
       keepassxc
       kitty
       love
@@ -88,5 +92,11 @@ in
     ];
 
     modules.homeManager.prismlauncher.jdk = lib.mkDefault [ "jdk25" "jdk21" ];
+  };
+
+  flake.modules.homeManager."users-${userName}-old-laptop" = {
+    imports = with flakeModules.homeManager; [
+      foot
+    ];
   };
 }
