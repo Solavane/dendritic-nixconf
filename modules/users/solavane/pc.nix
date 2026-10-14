@@ -20,6 +20,7 @@ in
   flake.modules.homeManager."users-${userName}-${suffix}" = {
     imports = with flakeModules.homeManager; [
       blender
+      davinci-resolve
       faugus
       fl-studio
       obs
