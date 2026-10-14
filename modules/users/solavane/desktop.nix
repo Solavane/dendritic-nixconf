@@ -26,6 +26,7 @@ in
       prusa-slicer
       spicetify
       vesktop
+      vscodium
       zen-browser
     ];
 
