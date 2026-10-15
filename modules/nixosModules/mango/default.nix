@@ -189,8 +189,8 @@
         ];
 
         source = [
-          "./noctalia.conf"
-          "./monitors.conf"
+          #"./noctalia.conf"
+          #"./monitors.conf"
         ];
       };
     };

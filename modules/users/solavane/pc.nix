@@ -25,6 +25,7 @@ in
       fl-studio
       obs
       prismlauncher
+      roomeqwizard
 
       flatpak
     ];
