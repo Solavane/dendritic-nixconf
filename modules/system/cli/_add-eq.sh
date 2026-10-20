@@ -34,6 +34,7 @@ add-eq -- turn an AutoEQ/SquigLink parametric EQ file into a PipeWire module.
   --device <node.name|id>  skip the interactive sink picker
   --host <name>            write to modules/hosts/<name>
   --name <name>            name the EQ (skips the prompt)
+  --eq-name <name>         display name for this EQ preset
   --yes, -y                take the default for every prompt
   --help, -h               this text
 EOF
@@ -283,7 +284,7 @@ _add_eq_node() {
 }
 
 add-eq() {
-  local hide=no device= host= name= assume_yes= reply= pick= desc= def_desc=
+  local hide=no device= host= name= display_name= assume_yes= reply= pick= desc= def_desc=
   local root host_name target_dir slug base trial eq_out nix_out nix_key dir line l i
   local sinks_txt
   local pos1= pos2= npos=0 rest=
@@ -304,6 +305,10 @@ add-eq() {
         [ $# -ge 2 ] || { _add_eq_die "--name needs a value"; return 1; }
         case $2 in -*) _add_eq_die "--name needs a value"; return 1 ;; esac
         name=$2; shift 2 ;;
+      --eq-name)
+        [ $# -ge 2 ] || { _add_eq_die "--eq-name needs a value"; return 1; }
+        case $2 in -*) _add_eq_die "--eq-name needs a value"; return 1 ;; esac
+        display_name=$2; shift 2 ;;
       --yes|-y) assume_yes=yes; shift ;;
       --) shift; rest=1; break ;;
       -*) _add_eq_die "unknown option $1"; return 1 ;;
@@ -456,10 +461,27 @@ EOF
     done
   fi
 
+  if [ -n "$display_name" ]; then
+    : # use as-is
+  elif [ ! -t 0 ]; then
+    display_name=$base
+  else
+    display_name=$base
+    if [ -n "$base" ]; then
+      while :; do
+        printf 'Display name for this EQ [%s]: ' "$display_name"
+        IFS= read -r reply || return 1
+        [ -n "$reply" ] || break
+        display_name=$reply
+        break
+      done
+    fi
+  fi
+
   eq_out=$slug.eq
   nix_out=$slug.nix
   nix_key=equalizer-$slug
-  desc="${def_desc:-$slug} EQ"
+  desc="${def_desc:-$slug} - ${display_name:-$slug}"
 
   target_dir=$root/modules/hosts/$host/equalizer
   mkdir -p "$target_dir" || { _add_eq_die "cannot create $target_dir"; return 1; }

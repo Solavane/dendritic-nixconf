@@ -7,7 +7,7 @@
           name = "libpipewire-module-parametric-equalizer";
           args = {
             "equalizer.filepath" = "${./lcd-2c.eq}";
-            "equalizer.description" = "DragonFly Red Pro EQ";
+            "equalizer.description" = "DragonFly Red Pro - LCD-2C";
             "capture.props" = {
               "media.class" = "Audio/Sink";
               "node.name" = "effect_input.eq_lcd-2c";

@@ -40,11 +40,128 @@
         pkgs.alsa-lib
       ];
 
+      # --- Plugin compatibility -------------------------------------------------
+      # The prefix was created by hand (winetricks winxp/win7 are in its log), so
+      # it still reports Windows 7. Several 2024-2026 plugins read the OS version
+      # and misbehave on 7 -- e.g. Splice INSTRUMENT's log prints "OS:Name :
+      # Windows 7" right before it gives up -- and WebView2-based editors assume
+      # 10+. Wine keeps the per-user override in HKCU\Software\Wine\Version,
+      # which takes precedence over the HKLM default the old winetricks set.
+      #
+      # DXVK replaces Wine's d3d8/9/10/11 and dxgi with real implementations.
+      # It is enabled by default: stock Wine's d3d11/dxgi are incomplete, and
+      # plugin GUI glitches/freezes (e.g. CloudSeed, many JUCE editors) come
+      # back without it. It cannot fix JUCE 8's Direct2D 1.3 / DirectComposition
+      # path (Cardinal, Splice INSTRUMENT); that needs a patched Wine. It can be
+      # turned off with enableDxvk=false, which restores the Wine modules saved
+      # as *.dll.old.
+      dxvk = pkgs.dxvk;
+      dxvkDlls = [
+        "d3d8"
+        "d3d9"
+        "d3d10core"
+        "d3d11"
+        "dxgi"
+      ];
+
+      # Idempotent prefix preparation: Windows version + DXVK. Everything is
+      # stamped and reversible (original DLLs are kept as *.dll.old).
+      prefixSetup = pkgs.writeShellApplication {
+        name = "fl-studio-prefix-setup";
+        runtimeInputs = [
+          wine
+          pkgs.coreutils
+          pkgs.gawk
+        ];
+        text = ''
+          export WINEPREFIX=${lib.escapeShellArg cfg.prefix}
+          export WINEARCH=win64
+          export WINEDEBUG=-all
+          # Must never reach out to the network for Mono/Gecko while it works.
+          export WINEDLLOVERRIDES="mscoree,mshtml="
+          # Several Wine helper scripts dereference COLUMNS under `set -u`.
+          export COLUMNS=100
+
+          sysdir="$WINEPREFIX/drive_c/windows/system32"
+          wowdir="$WINEPREFIX/drive_c/windows/syswow64"
+
+          if [ ! -d "$sysdir" ]; then
+            echo "Initialising Wine prefix at $WINEPREFIX..."
+            wineboot --init
+            for _ in $(seq 1 120); do
+              [ -d "$sysdir" ] && break
+              sleep 0.5
+            done
+          fi
+          if [ ! -d "$sysdir" ]; then
+            echo "Wine prefix at $WINEPREFIX failed to initialise" >&2
+            exit 1
+          fi
+
+          current="$(wine reg query 'HKCU\Software\Wine' /v Version 2>/dev/null | tr -d '\r' | awk '{print $NF}')"
+          if [ "$current" != ${lib.escapeShellArg cfg.windowsVersion} ]; then
+            echo "Setting Wine prefix version to ${cfg.windowsVersion}..."
+            wine reg add 'HKCU\Software\Wine' /v Version /t REG_SZ \
+              /d ${lib.escapeShellArg cfg.windowsVersion} /f >/dev/null
+          fi
+
+          ${lib.optionalString cfg.enableDxvk ''
+            dxvk_stamp="$WINEPREFIX/.fl-studio-dxvk-${dxvk.version}"
+            if [ ! -f "$dxvk_stamp" ]; then
+              echo "Installing DXVK ${dxvk.version} into $WINEPREFIX..."
+              for arch in x64 x32; do
+                if [ "$arch" = x64 ]; then dir="$sysdir"; else dir="$wowdir"; fi
+                # Skipped if the prefix has no separate 32-bit tree.
+                [ -d "$dir" ] || continue
+                for src in ${dxvk.bin}/"$arch"/*.dll; do
+                  [ -e "$src" ] || continue
+                  name="$(basename "$src")"
+                  # Keep the displaced module so this stays reversible.
+                  if [ -e "$dir/$name" ] && [ ! -e "$dir/$name.old" ]; then
+                    cp "$dir/$name" "$dir/$name.old"
+                  fi
+                  install -m755 "$src" "$dir/$name"
+                done
+              done
+              for dll in ${lib.concatStringsSep " " dxvkDlls}; do
+                wine reg add 'HKCU\Software\Wine\DllOverrides' \
+                  /v "$dll" /d native /f >/dev/null
+              done
+              # Invalidate stamps from other versions so they reinstall.
+              rm -f "$WINEPREFIX"/.fl-studio-dxvk-*
+              printf '%s\n' ${lib.escapeShellArg dxvk.version} >"$dxvk_stamp"
+            fi
+          ''}
+          ${lib.optionalString (!cfg.enableDxvk) ''
+            # enableDxvk was turned off: undo a previous install so the option
+            # really means what it says.
+            for stamp in "$WINEPREFIX"/.fl-studio-dxvk-*; do
+              [ -e "$stamp" ] || continue
+              echo "Removing DXVK from $WINEPREFIX..."
+              for dir in "$sysdir" "$wowdir"; do
+                [ -d "$dir" ] || continue
+                for dll in ${lib.concatStringsSep " " dxvkDlls}; do
+                  if [ -f "$dir/$dll.dll.old" ]; then
+                    mv -f "$dir/$dll.dll.old" "$dir/$dll.dll"
+                  else
+                    rm -f "$dir/$dll.dll"
+                  fi
+                done
+              done
+              for dll in ${lib.concatStringsSep " " dxvkDlls}; do
+                wine reg delete 'HKCU\Software\Wine\DllOverrides' /v "$dll" /f >/dev/null 2>&1 || true
+              done
+              rm -f "$stamp"
+            done
+          ''}
+        '';
+      };
+
       # Idempotent: installs and registers WineASIO into the prefix, and is
       # cheap enough (a single grep) to run on every launch as a self-heal.
       wineasioSetup = pkgs.writeShellApplication {
         name = "fl-studio-wineasio-setup";
-        runtimeInputs = [ wine ];
+        runtimeInputs = [ wine pkgs.coreutils ];
         text = ''
           export WINEPREFIX=${lib.escapeShellArg cfg.prefix}
           export WINEARCH=win64
@@ -124,6 +241,19 @@
           export WINEPREFIX=${lib.escapeShellArg cfg.prefix}
           export WINEARCH=win64
 
+          ${lib.optionalString cfg.forceSoftwareRendering ''
+            # Force JUCE/VSTGUI editors onto the software (GDI) renderer. Wine's
+            # Direct2D is incomplete and is a common cause of blank or crashing
+            # plugin windows; the plugins that touch d2d1 load it dynamically,
+            # so they transparently fall back. Not safe for JUCE 8 plugins that
+            # link d2d1.dll directly (e.g. Splice INSTRUMENT): they stop loading.
+            export WINEDLLOVERRIDES="d2d1=disabled''${WINEDLLOVERRIDES:+;$WINEDLLOVERRIDES}"
+          ''}
+          # Advertise a low-latency buffer size to FL Studio's ASIO panel.
+          # WineASIO's fixed-buffersize default hands the actual buffer size to
+          # the JACK backend, i.e. the PipeWire quantum set by audio-latency.
+          export WINEASIO_PREFERRED_BUFFERSIZE=${toString cfg.bufferSize}
+
           # Opportunistic: if the session ever ships with a generous memlock
           # hard limit, use all of it for PipeWire's own locked buffers. The
           # deadlock itself is fixed in the patched wineasio above, so this is
@@ -138,6 +268,8 @@
             export LD_LIBRARY_PATH=${lib.escapeShellArg audioLibPath}
           fi
 
+          ${prefixSetup}/bin/fl-studio-prefix-setup
+
           ${wineasioSetup}/bin/fl-studio-wineasio-setup
 
           image_line_dir="$WINEPREFIX/drive_c/Program Files/Image-Line"
@@ -151,7 +283,16 @@
             exit 1
           fi
 
-          exec wine "''${candidates[0]}" "$@"
+          ${lib.optionalString (cfg.virtualDesktop == null) ''
+            exec wine "''${candidates[0]}" "$@"
+          ''}
+          ${lib.optionalString (cfg.virtualDesktop != null) ''
+            # Run everything inside one Wine virtual desktop. This makes Wine
+            # own every plugin/wrapper window, which is the usual workaround for
+            # plugin editor windows that float out of sync with FL Studio's main
+            # window (and for some transparency compositing glitches).
+            exec wine explorer /desktop=fl-studio,${cfg.virtualDesktop} "''${candidates[0]}" "$@"
+          ''}
         '';
       };
 
@@ -169,6 +310,122 @@
         '';
       };
 
+      # Stock-Wine compatibility DLLs that nixpkgs does not ship and that must be
+      # fetched by winetricks (needs network). Run once, ideally with FL closed:
+      #   fl-studio-tricks
+      #   - corefonts:      fonts DirectWrite/JUCE expect for non-blank text.
+      #   - gdiplus:        native GDI+ fixes many VSTGUI plugin editors (OTT).
+      #   - d3dcompiler_47: shader compiler some plugin GUIs rely on.
+      flStudioTricks = pkgs.writeShellApplication {
+        name = "fl-studio-tricks";
+        runtimeInputs = [ wine pkgs.winetricks ];
+        text = ''
+          export WINEPREFIX=${lib.escapeShellArg cfg.prefix}
+          export WINEARCH=win64
+          if [ "$#" -eq 0 ]; then
+            set -- corefonts gdiplus d3dcompiler_47
+          fi
+          exec winetricks -q "$@"
+        '';
+      };
+
+      # Many 32-bit VSTs draw their editor inside FL Studio's own window, which
+      # crashes the Fruity Wrapper under Wine. Setting the per-plugin DWORD
+      # BridgedExternalWindow=1 makes the wrapper render the editor as its own
+      # top-level window instead, which stops the crash (the price is that the
+      # editor window then floats separately from FL Studio). Entries only exist
+      # after FL has scanned the plugin, so run this afterwards, with FL closed:
+      #   fl-studio-bridged-window list
+      #   fl-studio-bridged-window Surge
+      #   fl-studio-bridged-window --all
+      flStudioBridgedWindow = pkgs.writeShellApplication {
+        name = "fl-studio-bridged-window";
+        runtimeInputs = [
+          wine
+          pkgs.coreutils
+          pkgs.gnugrep
+        ];
+        text = ''
+          export WINEPREFIX=${lib.escapeShellArg cfg.prefix}
+          export WINEARCH=win64
+
+          root='HKCU\Software\Image-Line\Shared\Plugins\Fruity Wrapper\Plugins'
+          prefix='HKEY_CURRENT_USER\Software\Image-Line\Shared\Plugins\Fruity Wrapper\Plugins'
+
+          keys="$(wine reg query "$root" /s 2>/dev/null | tr -d '\r' | grep '^HKEY_CURRENT_USER' || true)"
+
+          print_entries() {
+            local key rel
+            while IFS= read -r key; do
+              case "$key" in
+                "$prefix"*) rel="''${key#"$prefix"}" ;;
+                *) continue ;;
+              esac
+              rel="''${rel#\\}"
+              [ -n "$rel" ] && printf '  %s\n' "$rel"
+            done <<< "$keys"
+          }
+
+          if [ "$#" -eq 0 ] || [ "$1" = list ]; then
+            echo "Sets BridgedExternalWindow=1 for FL Studio's Fruity Wrapper."
+            echo "Use it for 32-bit VSTs whose editor crashes FL Studio. Run it"
+            echo "with FL closed, then restart FL."
+            echo
+            echo "Usage: fl-studio-bridged-window <substring> [...] | --all | list"
+            echo
+            echo "Known wrapper entries:"
+            print_entries
+            exit 0
+          fi
+
+          patterns=("$@")
+          if [ "$1" = --all ]; then
+            patterns=("")
+          fi
+
+          selected=""
+          while IFS= read -r key; do
+            case "$key" in
+              "$prefix"*) rel="''${key#"$prefix"}" ;;
+              *) continue ;;
+            esac
+            rel="''${rel#\\}"
+            [ -n "$rel" ] || continue
+            for pat in "''${patterns[@]}"; do
+              case "''${rel,,}" in
+                *"''${pat,,}"*)
+                  selected="$selected$key"$'\n'
+                  echo "BridgedExternalWindow=1 -> $rel"
+                  break
+                  ;;
+              esac
+            done
+          done <<< "$keys"
+
+          if [ -z "$selected" ]; then
+            echo "No Fruity Wrapper entry matched." >&2
+            exit 1
+          fi
+
+          while IFS= read -r key; do
+            [ -n "$key" ] || continue
+            wine reg add "$key" /v BridgedExternalWindow /t REG_DWORD /d 1 /f >/dev/null
+          done <<< "$selected"
+        '';
+      };
+
+      # Launches FL Studio with Wine's graphics/loader diagnostics enabled so a
+      # misbehaving plugin names itself, e.g.
+      #   fl-studio-debug 2>fl.log
+      flStudioDebug = pkgs.writeShellApplication {
+        name = "fl-studio-debug";
+        runtimeInputs = [ pkgs.coreutils ];
+        text = ''
+          export WINEDEBUG="''${WINEDEBUG:-+d2d1,+dcomp,+dwrite,+dxgi,+wm}"
+          exec ${flStudio}/bin/fl-studio "$@"
+        '';
+      };
+
     in
     {
       options.modules.homeManager.fl-studio = {
@@ -176,6 +433,66 @@
           type = lib.types.str;
           default = "${config.home.homeDirectory}/.wine-flstudio";
           description = "Wine prefix dedicated to FL Studio.";
+        };
+
+        bufferSize = lib.mkOption {
+          type = lib.types.ints.positive;
+          default = 256;
+          description = ''
+            Preferred WineASIO buffer size in samples. Must be a power of two.
+            With the default fixed-buffersize setting the engine still takes its
+            real buffer from the PipeWire quantum, so keep this in step with the
+            audio-latency module.
+          '';
+        };
+
+        windowsVersion = lib.mkOption {
+          type = lib.types.str;
+          default = "win10";
+          example = "win11";
+          description = ''
+            Windows version reported to the prefix (HKCU\Software\Wine\Version).
+            The prefix was set up as Windows 7 by hand; most current plugin
+            installers and WebView2-based editors require at least Windows 10.
+          '';
+        };
+
+        enableDxvk = lib.mkOption {
+          type = lib.types.bool;
+          default = true;
+          description = ''
+            Install DXVK into the prefix, replacing Wine's d3d8/d3d9/d3d10/d3d11
+            and dxgi. This is the usual stock-Wine fix for plugin GUI glitches
+            and freezes; stock Wine's d3d11/dxgi are incomplete, so leaving it
+            off makes many plugin editors misbehave. It cannot fix JUCE 8's
+            Direct2D 1.3 / DirectComposition path (Cardinal, Splice INSTRUMENT);
+            that needs a patched Wine. Turning it off restores the Wine modules
+            saved as *.dll.old.
+          '';
+        };
+
+        forceSoftwareRendering = lib.mkOption {
+          type = lib.types.bool;
+          default = false;
+          description = ''
+            Launch FL Studio with "d2d1=disabled", forcing plugins onto the
+            software (GDI) renderer. Helps plugins that load Direct2D
+            dynamically, but breaks plugins that link d2d1.dll directly (e.g.
+            Splice INSTRUMENT), which then fail to load.
+          '';
+        };
+
+        virtualDesktop = lib.mkOption {
+          type = lib.types.nullOr lib.types.str;
+          default = null;
+          example = "1920x1080";
+          description = ''
+            Run FL Studio inside a Wine virtual desktop of this size. Wine then
+            owns every plugin window, which often fixes plugin editors that
+            float out of sync with FL Studio's window and some transparency
+            compositing glitches, at the cost of boxing the whole DAW into a
+            single window.
+          '';
         };
       };
 
@@ -187,6 +504,10 @@
         home.packages = [
           flStudio
           flStudioWine
+          flStudioTricks
+          flStudioBridgedWindow
+          flStudioDebug
+          prefixSetup
           wineasioSetup
           wineasio
           wine
@@ -195,7 +516,11 @@
           pkgs.yabridgectl
         ];
 
-        home.activation.flStudioWineAsio = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+        home.activation.flStudioPrefix = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+          $DRY_RUN_CMD ${prefixSetup}/bin/fl-studio-prefix-setup
+        '';
+
+        home.activation.flStudioWineAsio = lib.hm.dag.entryAfter [ "flStudioPrefix" ] ''
           $DRY_RUN_CMD ${wineasioSetup}/bin/fl-studio-wineasio-setup
         '';
 

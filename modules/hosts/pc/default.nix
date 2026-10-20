@@ -41,6 +41,7 @@ in
     modules = with config.flake.modules.nixos; [
       # System
       ./_hardware-configuration.nix
+      audio-latency
       comfyui
       desktop
       equalizer-lcd-2c
