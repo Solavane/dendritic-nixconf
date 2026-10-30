@@ -5,6 +5,8 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     omniflake.url = "github:fzakaria/omniflake";
     omniflake.inputs.nixpkgs.follows = "nixpkgs";
+
+    impermanence.url = "github:nix-community/impermanence";
     
     mango = {
       url = "github:mangowm/mango";

@@ -1,5 +1,11 @@
 {
   flake.modules.homeManager.vesktop = {
+    home.persistence."/persistent".directories = [
+      ".config/vesktop"
+      ".config/Vencord"
+      ".local/share/vesktop"
+    ];
+
     programs.vesktop = {
       enable = true;
       vencord = {

@@ -1,5 +1,10 @@
 {
   flake.modules.homeManager.obs = { osConfig, pkgs, ... }: {
+    home.persistence."/persistent".directories = [
+      ".config/obs-studio"
+      ".local/share/obs"
+    ];
+
     programs.obs-studio = {
       enable = true;
 

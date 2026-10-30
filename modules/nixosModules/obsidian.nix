@@ -10,6 +10,10 @@
   };
 
   flake.modules.homeManager.obsidian = { pkgs, ... }: {
+    home.persistence."/persistent".directories = [
+      ".config/obsidian"
+    ];
+
     programs.obsidian = {
       enable = true;
 

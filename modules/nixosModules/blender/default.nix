@@ -12,6 +12,11 @@
   };
 
   flake.modules.homeManager.blender = { osConfig, pkgs, ... }: {
+    home.persistence."/persistent".directories = [
+      ".config/blender"
+      ".local/share/blender"
+    ];
+
     home.packages =
       if (osConfig.modules.nixos.nvidia.enable or false) then
       [ pkgs.blender-cuda.blender-with-cuda-unstable ]

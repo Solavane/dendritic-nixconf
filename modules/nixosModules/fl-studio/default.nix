@@ -501,6 +501,12 @@
       # at lib/wine is what broke WineASIO in the first place. They now live
       # only inside the fl-studio wrappers.
       config = {
+        home.persistence."/persistent".directories = [
+          ".config/yabridgectl"
+          ".wine-flstudio"
+          "wineasio-dll"
+        ];
+
         home.packages = [
           flStudio
           flStudioWine

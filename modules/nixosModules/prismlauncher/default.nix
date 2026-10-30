@@ -8,6 +8,12 @@
       };
     };
 
+    config.home.persistence."/persistent".directories = [
+      ".config/PrismLauncher"
+      ".local/share/PrismLauncher"
+      ".minecraft"
+    ];
+
     config.home.packages = [
       (pkgs.prismlauncher.override {
         additionalPrograms = [ pkgs.ffmpeg ];

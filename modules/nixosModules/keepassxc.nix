@@ -1,5 +1,9 @@
 {
   flake.modules.homeManager.keepassxc = { lib, pkgs, ... }: {
+    home.persistence."/persistent".directories = [
+      ".config/keepassxc"
+    ];
+
     programs.keepassxc = {
       enable = true;
       autostart = false;

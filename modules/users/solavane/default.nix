@@ -1,5 +1,6 @@
 {
   config,
+  lib,
   ...
 }:
 let
@@ -21,6 +22,7 @@ in
   };
 
   flake.modules.homeManager."users-${userName}" = {
+    home.persistence."/persistent".enable = lib.mkDefault false;
     home.username = "${userName}";
     home.homeDirectory = "/home/${userName}";
     home.stateVersion = "25.11";

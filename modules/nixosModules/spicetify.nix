@@ -18,6 +18,10 @@
       inputs.omniflake.flakes.spicetify-nix.homeManagerModules.default
     ];
 
+    home.persistence."/persistent".directories = [
+      ".config/spotify"
+    ];
+
     programs.spicetify = {
       enable = true;
       theme = spicePkgs.themes.catppuccin;

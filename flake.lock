@@ -91,6 +91,46 @@
         "type": "github"
       }
     },
+    "home-manager": {
+      "inputs": {
+        "nixpkgs": [
+          "impermanence",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1768598210,
+        "narHash": "sha256-kkgA32s/f4jaa4UG+2f8C225Qvclxnqs76mf8zvTVPg=",
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "rev": "c47b2cc64a629f8e075de52e4742de688f930dc6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "type": "github"
+      }
+    },
+    "impermanence": {
+      "inputs": {
+        "home-manager": "home-manager",
+        "nixpkgs": "nixpkgs"
+      },
+      "locked": {
+        "lastModified": 1792739756,
+        "narHash": "sha256-s0TeXWG5Ci75Y/Hzon0Z7NrN/fG773Rc54/z6oPFszQ=",
+        "owner": "nix-community",
+        "repo": "impermanence",
+        "rev": "fa627f4c8b8e92f58f58a73d99ee4e1304e64eb2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "impermanence",
+        "type": "github"
+      }
+    },
     "mango": {
       "inputs": {
         "flake-parts": "flake-parts",
@@ -100,11 +140,11 @@
         "scenefx": "scenefx"
       },
       "locked": {
-        "lastModified": 1791892562,
-        "narHash": "sha256-lD8sehdmMunRSkpFoDnKJxrgrmxPVknPnUU5B54D3Qg=",
+        "lastModified": 1793285666,
+        "narHash": "sha256-0MRMHabwVDRG52oLuAFnlPXKtSnuuTDy4ws2mXq1fjg=",
         "owner": "mangowm",
         "repo": "mango",
-        "rev": "732d9f8890aca8ace1c47f64a75689f57a7f388c",
+        "rev": "76fd7ea207e287db504e28dd5cc44d690b417711",
         "type": "github"
       },
       "original": {
@@ -115,11 +155,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1791734076,
-        "narHash": "sha256-i5qk1kLiit98rRbh1AXmWBNT9QXC/y4l5Wk/u5EdpDQ=",
+        "lastModified": 1768564909,
+        "narHash": "sha256-Kell/SpJYVkHWMvnhqJz/8DqQg2b6PguxVWOuadbHCc=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "7fd4004d0511991fff3a0524856a9be09e28c5f0",
+        "rev": "e4bae1bd10c9c57b2cf517953ab70060a828ee6f",
         "type": "github"
       },
       "original": {
@@ -159,6 +199,22 @@
         "type": "github"
       }
     },
+    "nixpkgs_2": {
+      "locked": {
+        "lastModified": 1793110635,
+        "narHash": "sha256-dhoW6VgFWlaodSY5jrBn+CF2FLmaUvDVgM7+C7T2+NM=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "31ecbaca1bdefa45dffc409f0250bd8039ea0010",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "obsidian-extensions": {
       "inputs": {
         "nixpkgs": [
@@ -167,11 +223,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1791894106,
-        "narHash": "sha256-eIdlI/4/v+szDDpQnZ8nGVTr9Iu9ubLIXi8ioAXYgw0=",
+        "lastModified": 1793359040,
+        "narHash": "sha256-wRB38TdrjIiqdusUc4Rh7mdIyz/GqPJzPtPHSc68bk8=",
         "owner": "karaolidis",
         "repo": "nix-obsidian-extensions",
-        "rev": "550ef53ceaf44fbb69e1c9693c6008a4252c0ab4",
+        "rev": "d5c1f3a5d3d444ec8baf4622125c1b77500b5084",
         "type": "github"
       },
       "original": {
@@ -191,11 +247,11 @@
         "systems": "systems_3"
       },
       "locked": {
-        "lastModified": 1791904161,
-        "narHash": "sha256-/SVQsE0pC1dciOLSA+kZZOb6JijktxY22OfCYc5PL8w=",
+        "lastModified": 1793369397,
+        "narHash": "sha256-lk++lEgFSSqnlqOoZvUHbF1ko9BZCdi0W98f7HEyPGU=",
         "owner": "fzakaria",
         "repo": "omniflake",
-        "rev": "cc69fa552b6a738f3e41c4c7c224a28d22ab334a",
+        "rev": "9ade325da041c483e822c842b10cb4a6a5d01d49",
         "type": "github"
       },
       "original": {
@@ -206,8 +262,9 @@
     },
     "root": {
       "inputs": {
+        "impermanence": "impermanence",
         "mango": "mango",
-        "nixpkgs": "nixpkgs",
+        "nixpkgs": "nixpkgs_2",
         "obsidian-extensions": "obsidian-extensions",
         "omniflake": "omniflake"
       }

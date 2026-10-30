@@ -21,5 +21,12 @@
       wl-mirror
       wdisplays
     ];
+
+    environment.persistence."/persistent".directories = [
+      "/var/lib/AccountsService"
+      "/var/lib/bluetooth"
+      "/var/lib/systemd/rfkill"
+      "/var/lib/upower"
+    ];
   };
 }

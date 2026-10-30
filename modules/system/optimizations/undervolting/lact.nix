@@ -3,5 +3,9 @@
     services.lact = {
       enable = true;
     };
+
+    environment.persistence."/persistent".directories = [
+      "/etc/lact"
+    ];
   };
 }

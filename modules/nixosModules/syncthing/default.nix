@@ -79,6 +79,10 @@
       };
 
       config = lib.mkIf cfg.enable {
+        home.persistence."/persistent".directories = [
+          ".local/state/syncthing"
+        ];
+
         services.syncthing = {
           enable = true;
 

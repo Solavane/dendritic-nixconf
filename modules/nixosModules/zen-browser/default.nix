@@ -49,6 +49,11 @@
     };
 
     config = {
+      home.persistence."/persistent".directories = [
+        ".config/zen"
+        ".mozilla"
+      ];
+
       home.packages = [
         (pkgs.wrapFirefox
           inputs.omniflake.flakes.zen-browser-flake-youwen5.packages.${pkgs.stdenv.hostPlatform.system}.zen-browser-unwrapped

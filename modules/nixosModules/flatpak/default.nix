@@ -8,6 +8,10 @@
   };
 
   flake.modules.homeManager.flatpak = { lib, ... }: {
+    home.persistence."/persistent".directories = [
+      ".var/app"
+    ];
+
     services.flatpak = {
       
       remotes = lib.mkOptionDefault [{

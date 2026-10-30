@@ -1,26 +1,19 @@
-{ 
+{
   config,
-  inputs, 
+  inputs,
   self,
-  ... 
-}: 
+  ...
+}:
 let
   hostName = baseNameOf (toString ./.);
 
   hostConfig = { pkgs, ... }: {
     networking.hostName = hostName;
     system.stateVersion = "25.11";
-    
+
     boot.loader = {
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;
-    };
-
-    fileSystems."/" = {
-      options = [ "subvol=@" "compress=zstd:1" "noatime" "discard=async" ];
-    };  
-    fileSystems."/home" = {
-      options = [ "subvol=@home" "compress=zstd:1" "noatime" ];
     };
 
     boot.kernelPackages = pkgs.linuxPackages_zen;
@@ -38,25 +31,29 @@ in
     system = "x86_64-linux";
     specialArgs = { inherit inputs self; };
 
-    modules = with config.flake.modules.nixos; [
+    modules = [
+      inputs.omniflake.flakes.disko.nixosModules.disko
+      ./_disko.nix
+    ] ++ (with config.flake.modules.nixos; [
       # System
       ./_hardware-configuration.nix
       audio-latency
-      comfyui
+      #comfyui
       desktop
-      equalizer-lcd-2c
-      flatpak
+      #equalizer-lcd-2c
+      #flatpak
       hostConfig
+      impermanence
       localsend
       nvidia
       optimizations
       optimizations-lact
-      steam
-      
-      #users
+      #steam
+
+      # Users
       users-solavane
       users-solavane-desktop
       users-solavane-pc
-    ];
+    ]);
   };
 }
