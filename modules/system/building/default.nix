@@ -1,10 +1,15 @@
 {
-  flake.modules.nixos.building = { config, ... }: {
-    
-    # Nix Helper. "nh os switch" to rebuild
+  config,
+  ...
+}:
+let
+  vars = config.vars;
+in
+{
+  flake.modules.nixos.building = {
     programs.nh = {
       enable = true;
-      flake = "${config.users.users.solavane.home}/nixconfig"; 
+      flake = vars.configLocation;
       clean.enable = true;
     };
   };

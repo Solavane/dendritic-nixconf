@@ -24,15 +24,5 @@ in
 
     fileSystems."/nix".neededForBoot = true;
     fileSystems."/persistent".neededForBoot = true;
-
-    virtualisation.vmVariant = {
-      virtualisation.fileSystems."/persistent".neededForBoot = true;
-      virtualisation.fileSystems."/nix".neededForBoot = true;
-    };
-
-    virtualisation.vmVariantWithDisko = {
-      virtualisation.fileSystems."/persistent".neededForBoot = true;
-      virtualisation.fileSystems."/nix".neededForBoot = true;
-    };
   };
 }

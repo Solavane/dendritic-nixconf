@@ -64,10 +64,5 @@
         { file = "/etc/ssh/ssh_host_rsa_key"; method = "symlink"; }
       ];
     };
-
-    virtualisation.vmVariantWithDisko = {
-      disko.devices.disk.main.content.partitions.luks.content.passwordFile =
-        toString (pkgs.writeText "vm-luks-pass" "testpass");
-    };
   };
 }

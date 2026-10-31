@@ -1,0 +1,5 @@
+---
+type: "job"
+name: "flake-installer"
+interface: "python"
+script: "main.py"

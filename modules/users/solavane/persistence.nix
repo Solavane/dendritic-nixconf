@@ -1,7 +1,17 @@
+{
+  config,
+  ...
+}:
 let
   userName = baseNameOf (toString ./.);
 in
 {
+  flake.modules.nixos."users-${userName}-persist" = {
+    home-manager.users.${userName}.imports = [
+      config.flake.modules.homeManager."users-${userName}-persist"
+    ];
+  };
+
   flake.modules.homeManager."users-${userName}-persist" = {
     home.persistence."/persistent" = {
       enable = true;

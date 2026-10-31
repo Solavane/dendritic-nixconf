@@ -18,7 +18,6 @@ let
       };
 
       initrd = {
-        systemd.enable = true;
         availableKernelModules = [
           "nvme"
           "r8169"

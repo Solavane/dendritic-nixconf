@@ -49,11 +49,13 @@ in
       optimizations
       optimizations-lact
       #steam
+      virtualization
 
       # Users
       users-solavane
       users-solavane-desktop
       users-solavane-pc
+      users-solavane-persist
     ]);
   };
 }
