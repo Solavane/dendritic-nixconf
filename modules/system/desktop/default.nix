@@ -8,7 +8,6 @@
       building
       cli
       core
-      dolphin
       locale
       ly
       mango

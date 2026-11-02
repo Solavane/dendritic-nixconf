@@ -20,6 +20,8 @@ REPO_DIR = os.path.join(WORK_DIR, "repo")
 INSTALL_FLAKE = os.path.join(WORK_DIR, "install-flake")
 PASS_FILE = os.path.join(WORK_DIR, "luks.key")
 ROOT = "/mnt"
+PASSWORD_DIR = os.path.join(ROOT, PERSISTENCE_ROOT.lstrip("/"), "secrets")
+PASSWORD_FILE = os.path.join(PASSWORD_DIR, USER_NAME + ".password")
 
 NEW_HOST_DEFAULT = """{
   config,
@@ -339,11 +341,22 @@ def _write_install_flake(host, disk):
         handle.write(flake)
 
 
-def _set_user_password(password):
-    _run(
-        ["nixos-enter", "--root", ROOT, "--command", "chpasswd"],
-        input_text=f"{USER_NAME}:{password}\n",
-    )
+def _write_user_password(password):
+    password_hash = _run(
+        ["mkpasswd", "--method=yescrypt", "--stdin"],
+        input_text=password + "\n",
+    ).strip()
+    if not password_hash:
+        raise InstallerError("Could not hash the user password.")
+
+    os.makedirs(PASSWORD_DIR, exist_ok=True)
+    os.chmod(PASSWORD_DIR, 0o700)
+    with open(PASSWORD_FILE, "w", encoding="utf-8") as handle:
+        handle.write(password_hash + "\n")
+    os.chmod(PASSWORD_FILE, 0o600)
+
+
+def _lock_root_password():
     _run(["nixos-enter", "--root", ROOT, "--command", "passwd -l root"])
 
 
@@ -455,6 +468,9 @@ def _install():
         shutil.copy2(generated, destination)
         shutil.rmtree(os.path.join(ROOT, "etc/nixos"), ignore_errors=True)
 
+    _set_status("Writing the user password.", 0.45)
+    _write_user_password(user_password)
+
     global_storage.insert("rootMountPoint", ROOT)
     _set_status("Installing NixOS.", 0.5)
     _run(
@@ -468,8 +484,8 @@ def _install():
         ]
     )
 
-    _set_status("Setting the user password.", 0.9)
-    _set_user_password(user_password)
+    _set_status("Locking the root account.", 0.9)
+    _lock_root_password()
 
     _set_status("Saving the configuration.", 0.95)
     _save_configuration()

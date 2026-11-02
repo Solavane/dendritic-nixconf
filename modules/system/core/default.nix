@@ -60,8 +60,6 @@
       files = [
         "/etc/machine-id"
         { file = "/var/lib/systemd/random-seed"; method = "symlink"; }
-        { file = "/etc/ssh/ssh_host_ed25519_key"; method = "symlink"; }
-        { file = "/etc/ssh/ssh_host_rsa_key"; method = "symlink"; }
       ];
     };
   };

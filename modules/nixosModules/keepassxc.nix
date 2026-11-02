@@ -2,7 +2,7 @@
   flake.modules.homeManager.keepassxc = { lib, pkgs, ... }: {
     home.persistence."/persistent".directories = [
       ".config/keepassxc"
-    ];
+      ".cache/keepassxc" ];
 
     programs.keepassxc = {
       enable = true;
@@ -23,6 +23,7 @@
         fi
 
         # This will ADD or UPDATE these keys but leave everything else (KeeShare) alone.
+        ${pkgs.crudini}/bin/crudini --set "$CONFIG_FILE" "General" "MinimizeAfterUnlock" "false"
         ${pkgs.crudini}/bin/crudini --set "$CONFIG_FILE" "GUI" "AdvancedSettings" "true"
         ${pkgs.crudini}/bin/crudini --set "$CONFIG_FILE" "GUI" "ApplicationTheme" "dark"
         ${pkgs.crudini}/bin/crudini --set "$CONFIG_FILE" "GUI" "ColorPasswords" "true"

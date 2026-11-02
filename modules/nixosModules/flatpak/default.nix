@@ -9,6 +9,7 @@
 
   flake.modules.homeManager.flatpak = { lib, ... }: {
     home.persistence."/persistent".directories = [
+      ".local/share/flatpak"
       ".var/app"
     ];
 

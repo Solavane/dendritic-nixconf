@@ -1,4 +1,8 @@
-{ pkgs, ... }: {
+{ 
+  pkgs, 
+  ... 
+}: 
+{
   flake.modules.nixos.virtualization = {
     virtualisation.vmVariant = {
       virtualisation.fileSystems."/persistent".neededForBoot = true;

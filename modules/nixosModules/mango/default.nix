@@ -31,9 +31,15 @@
   };
   
   flake.modules.homeManager.mango = { ... }: {
+    home.persistence."/persistent".directories = [
+      ".local/state/noctalia"
+      ".cache/noctalia"
+    ];
+
     imports = [
       inputs.mango.hmModules.mango
     ];
+
     wayland.windowManager.mango = {
       enable = true;
       autostart_sh = ''

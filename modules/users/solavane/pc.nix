@@ -18,17 +18,17 @@ in
   };
 
   flake.modules.homeManager."users-${userName}-${suffix}" = {
-    imports = #[ flakeModules.homeManager."users-${userName}-persist" ] ++ 
+    imports = [ flakeModules.homeManager."users-${userName}-persist" ] ++ 
     (with flakeModules.homeManager; [
-      #blender
-      #davinci-resolve
-      #faugus
+      blender
+      davinci-resolve
+      faugus
       #fl-studio
-      #obs
+      obs
       prismlauncher
-      #roomeqwizard
+      roomeqwizard
 
-      #flatpak
+      flatpak
     ]);
 
     modules.homeManager.prismlauncher.jdk = lib.mkDefault [ "jdk25" "jdk21" ];

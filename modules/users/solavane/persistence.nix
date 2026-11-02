@@ -17,7 +17,6 @@ in
       enable = true;
 
       directories = [
-        "Desktop"
         "Documents"
         "Downloads"
         "Music"
@@ -30,6 +29,7 @@ in
 
         ".config/autostart"
         ".config/kde"
+        ".config/zsh"
         ".gradle"
         ".java"
         ".local/share/color-schemes"
@@ -52,7 +52,6 @@ in
 
       files = [
         ".bash_history"
-        ".gitconfig"
         ".nvidia-settings-rc"
       ];
     };

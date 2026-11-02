@@ -10,12 +10,6 @@ in
     programs = {
       # Shell
       zsh.enable = true;
-
-      # Launch non-installed commands through ", firefox"
-      comma = {
-        enable = true;
-        enableZshIntegration = true;
-      };
     };
 
     environment.systemPackages = with pkgs; [

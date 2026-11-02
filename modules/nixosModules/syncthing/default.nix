@@ -80,6 +80,7 @@
 
       config = lib.mkIf cfg.enable {
         home.persistence."/persistent".directories = [
+          ".config/syncthing"
           ".local/state/syncthing"
         ];
 

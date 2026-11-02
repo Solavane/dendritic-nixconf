@@ -18,16 +18,17 @@ in
 
   flake.modules.homeManager."users-${userName}-${suffix}" = {
     imports = with flakeModules.homeManager; [
+      dolphin
       keepassxc
       kitty
       #love
+      librewolf
       obsidian
       opencode
       #prusa-slicer
-      #spicetify
+      spicetify
       vesktop
-      #vscodium
-      #zen-browser
+      vscodium
     ];
 
     #modules.homeManager.zen-browser = {

@@ -106,6 +106,7 @@ in
           pkgs.util-linux
           pkgs.git
           pkgs.disko
+          pkgs.mkpasswd
           pkgs.zenity
           calamares
         ]}:''${PATH:-}"

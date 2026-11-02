@@ -19,6 +19,7 @@
     ];
 
     home.persistence."/persistent".directories = [
+      ".cache/spotify"
       ".config/spotify"
     ];
 

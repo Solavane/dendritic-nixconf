@@ -39,23 +39,24 @@ in
       ./_hardware-configuration.nix
       audio-latency
       #comfyui
+      comma
       desktop
-      #equalizer-lcd-2c
-      #flatpak
+      equalizer-lcd-2c
+      flatpak
       hostConfig
       impermanence
       localsend
+      tpm2
       nvidia
       optimizations
       optimizations-lact
-      #steam
+      steam
       virtualization
 
       # Users
       users-solavane
       users-solavane-desktop
       users-solavane-pc
-      users-solavane-persist
     ]);
   };
 }

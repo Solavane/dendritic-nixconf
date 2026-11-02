@@ -3,49 +3,48 @@
   ...
 }:
 {
-  config.flake.modules.nixos.nvidia =
-    {
-      config,
-      lib,
-      self,
-      ...
-    }:
-    {
-      imports = [ self.modules.nixos.blender-cuda ];
+  config.flake.modules.nixos.nvidia = { config, lib, self, ... }: {
+    imports = [ self.modules.nixos.blender-cuda ];
 
-      options.modules.nixos.nvidia.enable = lib.mkOption {
-        type = lib.types.bool;
-        default = false;
-        description = "If PC has NVIDIA GPU";
-      };
-
-      config = {
-        modules.nixos.nvidia.enable = true;
-
-        services.xserver.videoDrivers = [ "nvidia" ];
-
-        hardware.nvidia = {
-          modesetting.enable     = true;
-          powerManagement.enable = lib.mkDefault true; # enable if you see sleep/wake issues
-          open                   = lib.mkDefault true;
-          nvidiaSettings         = false;
-          package                = lib.mkDefault config.boot.kernelPackages.nvidiaPackages.stable;
-        };
-
-        hardware.graphics.enable = true;
-
-        environment.sessionVariables = {
-          LIBVA_DRIVER_NAME         = "nvidia";
-          XDG_SESSION_TYPE          = "wayland";
-          GBM_BACKEND               = "nvidia-drm";
-          __GLX_VENDOR_LIBRARY_NAME = "nvidia";
-          WLR_NO_HARDWARE_CURSORS   = "1";
-        };
-
-        nix.settings = {
-          substituters        = [ "https://cache.nixos-cuda.org" ];
-          trusted-public-keys = [ "cache.nixos-cuda.org:74DUi4Ye579gUqzH4ziL9IyiJBlDpMRn9MBN8oNan9M=" ];
-        };
-      };
+    options.modules.nixos.nvidia.enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "If PC has NVIDIA GPU";
     };
+
+    config = {
+      modules.nixos.nvidia.enable = true;
+
+      services.xserver.videoDrivers = [ "nvidia" ];
+
+      hardware.nvidia = {
+        modesetting.enable     = true;
+        powerManagement.enable = lib.mkDefault true; # enable if you see sleep/wake issues
+        open                   = lib.mkDefault true;
+        nvidiaSettings         = false;
+        package                = lib.mkDefault config.boot.kernelPackages.nvidiaPackages.stable;
+      };
+
+      hardware.graphics.enable = true;
+
+      environment.sessionVariables = {
+        LIBVA_DRIVER_NAME         = "nvidia";
+        XDG_SESSION_TYPE          = "wayland";
+        GBM_BACKEND               = "nvidia-drm";
+        __GLX_VENDOR_LIBRARY_NAME = "nvidia";
+        WLR_NO_HARDWARE_CURSORS   = "1";
+      };
+
+      nix.settings = {
+        substituters        = [ "https://cache.nixos-cuda.org" ];
+        trusted-public-keys = [ "cache.nixos-cuda.org:74DUi4Ye579gUqzH4ziL9IyiJBlDpMRn9MBN8oNan9M=" ];
+      };
+
+      environment.persistence."/persistent".users.solavane.directories = lib.mkIf (
+        config.environment.persistence."/persistent".enable or false
+      ) [
+        ".cache/nvidia"
+      ];
+    };
+  };
 }
