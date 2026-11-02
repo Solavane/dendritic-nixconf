@@ -1,5 +1,7 @@
 {
   flake.modules.homeManager.keepassxc = { lib, pkgs, ... }: {
+    modules.homeManager.mango.apps = [ "keepassxc" ];
+
     home.persistence."/persistent".directories = [
       ".config/keepassxc"
       ".cache/keepassxc" ];

@@ -49,6 +49,8 @@
     };
 
     config = {
+      modules.homeManager.mango.apps = [ "zen-browser" ];
+
       home.persistence."/persistent".directories = [
         ".config/zen"
         ".mozilla"

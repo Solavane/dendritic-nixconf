@@ -7,6 +7,10 @@
       localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
     };
 
+    home-manager.sharedModules = [
+      { modules.homeManager.mango.apps = [ "steam" ]; }
+    ];
+
     environment.persistence."/persistent".users.solavane.directories = lib.mkIf (
       config.environment.persistence."/persistent".enable or false
     ) [

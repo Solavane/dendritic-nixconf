@@ -10,6 +10,8 @@
   };
 
   flake.modules.homeManager.obsidian = { pkgs, ... }: {
+    modules.homeManager.mango.apps = [ "obsidian" ];
+
     home.persistence."/persistent".directories = [
       ".config/obsidian"
     ];

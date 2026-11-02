@@ -8,6 +8,8 @@
       };
     };
 
+    config.modules.homeManager.mango.apps = [ "prismlauncher" ];
+
     config.home.persistence."/persistent".directories = [
       ".config/PrismLauncher"
       ".local/share/PrismLauncher"

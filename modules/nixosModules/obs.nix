@@ -1,5 +1,7 @@
 {
   flake.modules.homeManager.obs = { osConfig, pkgs, ... }: {
+    modules.homeManager.mango.apps = [ "obs" ];
+
     home.persistence."/persistent".directories = [
       ".config/obs-studio"
       ".local/share/obs"

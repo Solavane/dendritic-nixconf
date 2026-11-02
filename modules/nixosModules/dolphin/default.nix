@@ -1,5 +1,7 @@
 {
   flake.modules.homeManager.dolphin = { pkgs, ... }: {
+    modules.homeManager.mango.apps = [ "dolphin" ];
+
     home.persistence."/persistent".directories = [
       ".local/share/dophin"
     ];

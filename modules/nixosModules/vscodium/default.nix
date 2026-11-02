@@ -1,5 +1,7 @@
 {
   flake.modules.homeManager.vscodium = {
+    modules.homeManager.mango.apps = [ "codium" ];
+
     home.persistence."/persistent".directories = [
       ".config/VSCodium"
       ".local/state/VSCodium"

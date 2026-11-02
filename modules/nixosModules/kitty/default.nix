@@ -1,5 +1,7 @@
 {
   flake.modules.homeManager.kitty = { config, ... }: {
+    modules.homeManager.mango.apps = [ "kitty" ];
+
     programs.kitty = {
       enable = true;
       extraConfig = ''

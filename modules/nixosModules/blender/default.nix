@@ -12,6 +12,8 @@
   };
 
   flake.modules.homeManager.blender = { osConfig, pkgs, ... }: {
+    modules.homeManager.mango.apps = [ "blender" ];
+
     home.persistence."/persistent".directories = [
       ".config/blender"
       ".local/share/blender"

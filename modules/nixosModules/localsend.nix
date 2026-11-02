@@ -5,6 +5,10 @@
       openFirewall = true;
     };
 
+    home-manager.sharedModules = [
+      { modules.homeManager.mango.apps = [ "localsend_app" ]; }
+    ];
+
     environment.persistence."/persistent".users.solavane.directories = lib.mkIf (
       config.environment.persistence."/persistent".enable or false
     ) [

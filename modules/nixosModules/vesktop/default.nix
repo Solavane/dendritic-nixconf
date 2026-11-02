@@ -1,5 +1,7 @@
 {
   flake.modules.homeManager.vesktop = {
+    modules.homeManager.mango.apps = [ "vesktop" ];
+
     home.persistence."/persistent".directories = [
       ".config/vesktop"
       ".config/Vencord"

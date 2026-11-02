@@ -18,6 +18,8 @@
       inputs.omniflake.flakes.spicetify-nix.homeManagerModules.default
     ];
 
+    modules.homeManager.mango.apps = [ "spotify" ];
+
     home.persistence."/persistent".directories = [
       ".cache/spotify"
       ".config/spotify"

@@ -27,10 +27,35 @@
 
     home-manager.sharedModules = [
       config.flake.modules.homeManager.mango
+      config.flake.modules.homeManager.mango-shortcuts
     ];
   };
   
-  flake.modules.homeManager.mango = { ... }: {
+  flake.modules.homeManager.mango = { config, lib, ... }:
+  let
+    userName = config.home.username;
+    userShortcutsFile = ../../users/${userName}/mango/_shortcuts.nix;
+
+    normalize = _: v: if builtins.isString v then { key = v; } else v;
+
+    defaults = lib.mapAttrs normalize (import ./_shortcuts.nix);
+    userShortcuts = lib.mapAttrs normalize (
+      if builtins.pathExists userShortcutsFile then import userShortcutsFile else { }
+    );
+
+    # User entries merge over defaults, so a user can change only the key,
+    # only the command, or set `enable = false` to drop a shortcut.
+    shortcuts = lib.recursiveUpdate defaults userShortcuts;
+
+    applicationBinds = lib.concatMap (
+      name:
+      let
+        s = shortcuts.${name} or null;
+      in
+      lib.optional (s != null && (s.enable or true)) "${s.key},spawn,${s.command or name}"
+    ) (lib.unique config.modules.homeManager.mango.apps);
+  in 
+  {
     home.persistence."/persistent".directories = [
       ".local/state/noctalia"
       ".cache/noctalia"
@@ -106,8 +131,7 @@
           "SUPER,comma,spawn,noctalia msg settings-toggle"
           "SUPER,v,spawn,noctalia msg panel-toggle clipboard"
           "SUPER+shift,v,spawn,noctalia msg panel-toggle wallpaper"
-          "SUPER+shift,s,spawn,noctalia msg panel-toggle session"
-          "SUPER+shift,l,spawn,noctalia msg theme-mode-toggle"
+          "SUPER,Escape,spawn,noctalia msg panel-toggle session"
           "SUPER+shift,n,spawn,noctalia msg notification-dnd-toggle"
           "SUPER+alt,w,spawn,noctalia msg wallpaper-random"
           "SUPER+alt,c,spawn,noctalia msg caffeine-toggle"
@@ -178,12 +202,7 @@
           "NONE,XF86AudioNext,spawn,noctalia msg media next"
           "NONE,XF86AudioPrev,spawn,noctalia msg media previous"
           "NONE,XF86AudioPlay,spawn,noctalia msg media toggle"
-
-          # Custom Applications
-          "SUPER,Return,spawn,kitty"
-          "SUPER,e,spawn,dolphin"
-          "SUPER,b,spawn,zen"
-        ];
+        ] ++ applicationBinds;
 
         # Mouse Bindings
         mousebind = [

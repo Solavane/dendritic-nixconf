@@ -38,6 +38,7 @@ in
       # System
       ./_hardware-configuration.nix
       audio-latency
+      equalizer-monitor
       #comfyui
       comma
       desktop

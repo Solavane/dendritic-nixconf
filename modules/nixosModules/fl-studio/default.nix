@@ -501,6 +501,8 @@
       # at lib/wine is what broke WineASIO in the first place. They now live
       # only inside the fl-studio wrappers.
       config = {
+        modules.homeManager.mango.apps = [ "fl-studio" ];
+
         home.persistence."/persistent".directories = [
           ".config/yabridgectl"
           ".wine-flstudio"

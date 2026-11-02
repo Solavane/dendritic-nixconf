@@ -12,6 +12,8 @@
     };
   in
   {
+    modules.homeManager.mango.apps = [ "neovim" ];
+
     programs.neovim = {
 
       enable         = true;
