@@ -23,7 +23,7 @@ in
       blender
       davinci-resolve
       faugus
-      #fl-studio
+      fl-studio
       kitty
       obs
       prismlauncher

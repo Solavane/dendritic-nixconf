@@ -13,19 +13,18 @@ in
   flake.modules.nixos."users-${userName}-${suffix}" = {
     home-manager.sharedModules = [
       flakeModules.homeManager."users-${userName}-${suffix}"
+      flakeModules.homeManager."users-${userName}-desktop-core"
     ];
   };
 
   flake.modules.homeManager."users-${userName}-${suffix}" = {
     imports = with flakeModules.homeManager; [
-      desktop-core
 
       kitty
       obsidian
       opencode
       spicetify
       vesktop
-      vscodium
     ];
 
     #modules.homeManager.zen-browser = {

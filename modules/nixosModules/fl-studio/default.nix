@@ -40,13 +40,22 @@
         pkgs.alsa-lib
       ];
 
+      # Environment shared by every wrapper that touches the prefix.
+      # winemenubuilder.exe is what makes Wine write .desktop files, MIME
+      # associations and menu entries (for FL itself and for every plugin
+      # installer), so it is disabled everywhere.
+      wineEnv = ''
+        export WINEPREFIX=${lib.escapeShellArg cfg.prefix}
+        export WINEARCH=win64
+        export WINEDLLOVERRIDES="winemenubuilder.exe=d''${WINEDLLOVERRIDES:+;$WINEDLLOVERRIDES}"
+      '';
+
       # --- Plugin compatibility -------------------------------------------------
-      # The prefix was created by hand (winetricks winxp/win7 are in its log), so
-      # it still reports Windows 7. Several 2024-2026 plugins read the OS version
-      # and misbehave on 7 -- e.g. Splice INSTRUMENT's log prints "OS:Name :
-      # Windows 7" right before it gives up -- and WebView2-based editors assume
-      # 10+. Wine keeps the per-user override in HKCU\Software\Wine\Version,
-      # which takes precedence over the HKLM default the old winetricks set.
+      # A fresh Wine prefix defaults to an old Windows version. Several 2024-2026
+      # plugins read the OS version and misbehave on it -- e.g. Splice
+      # INSTRUMENT's log prints "OS:Name : Windows 7" right before it gives up
+      # -- and WebView2-based editors assume 10+. Wine keeps the per-user
+      # override in HKCU\Software\Wine\Version, which is what is set below.
       #
       # DXVK replaces Wine's d3d8/9/10/11 and dxgi with real implementations.
       # It is enabled by default: stock Wine's d3d11/dxgi are incomplete, and
@@ -71,14 +80,14 @@
         runtimeInputs = [
           wine
           pkgs.coreutils
+          pkgs.findutils
           pkgs.gawk
         ];
         text = ''
-          export WINEPREFIX=${lib.escapeShellArg cfg.prefix}
-          export WINEARCH=win64
+          ${wineEnv}
           export WINEDEBUG=-all
           # Must never reach out to the network for Mono/Gecko while it works.
-          export WINEDLLOVERRIDES="mscoree,mshtml="
+          export WINEDLLOVERRIDES="mscoree,mshtml=;winemenubuilder.exe=d"
           # Several Wine helper scripts dereference COLUMNS under `set -u`.
           export COLUMNS=100
 
@@ -97,6 +106,18 @@
             echo "Wine prefix at $WINEPREFIX failed to initialise" >&2
             exit 1
           fi
+
+          # Wine links the prefix's Desktop/Documents/Downloads/Music/... to the
+          # real ones in $HOME, so FL and every plugin end up writing into your
+          # actual home. Swap the links for real directories so everything stays
+          # inside the prefix. rm on a symlink removes only the link, never the
+          # target. Runs on every launch, so it also heals a prefix that Wine
+          # has re-linked after an update.
+          find "$WINEPREFIX/drive_c/users" -mindepth 2 -maxdepth 2 -type l \
+            | while IFS= read -r link; do
+                rm -- "$link"
+                mkdir -p -- "$link"
+              done
 
           current="$(wine reg query 'HKCU\Software\Wine' /v Version 2>/dev/null | tr -d '\r' | awk '{print $NF}')"
           if [ "$current" != ${lib.escapeShellArg cfg.windowsVersion} ]; then
@@ -163,8 +184,7 @@
         name = "fl-studio-wineasio-setup";
         runtimeInputs = [ wine pkgs.coreutils ];
         text = ''
-          export WINEPREFIX=${lib.escapeShellArg cfg.prefix}
-          export WINEARCH=win64
+          ${wineEnv}
 
           sysdir="$WINEPREFIX/drive_c/windows/system32"
           stamp="$WINEPREFIX/.fl-studio-wineasio"
@@ -238,8 +258,7 @@
         name = "fl-studio";
         runtimeInputs = [ wine pkgs.coreutils ];
         text = ''
-          export WINEPREFIX=${lib.escapeShellArg cfg.prefix}
-          export WINEARCH=win64
+          ${wineEnv}
 
           ${lib.optionalString cfg.forceSoftwareRendering ''
             # Force JUCE/VSTGUI editors onto the software (GDI) renderer. Wine's
@@ -304,8 +323,7 @@
         name = "fl-studio-wine";
         runtimeInputs = [ wine ];
         text = ''
-          export WINEPREFIX=${lib.escapeShellArg cfg.prefix}
-          export WINEARCH=win64
+          ${wineEnv}
           exec wine "$@"
         '';
       };
@@ -316,14 +334,14 @@
       #   - corefonts:      fonts DirectWrite/JUCE expect for non-blank text.
       #   - gdiplus:        native GDI+ fixes many VSTGUI plugin editors (OTT).
       #   - d3dcompiler_47: shader compiler some plugin GUIs rely on.
+      #   - vcrun2022:      VC++ runtime; many plugins do not bundle it.
       flStudioTricks = pkgs.writeShellApplication {
         name = "fl-studio-tricks";
         runtimeInputs = [ wine pkgs.winetricks ];
         text = ''
-          export WINEPREFIX=${lib.escapeShellArg cfg.prefix}
-          export WINEARCH=win64
+          ${wineEnv}
           if [ "$#" -eq 0 ]; then
-            set -- corefonts gdiplus d3dcompiler_47
+            set -- corefonts gdiplus d3dcompiler_47 vcrun2022
           fi
           exec winetricks -q "$@"
         '';
@@ -346,8 +364,7 @@
           pkgs.gnugrep
         ];
         text = ''
-          export WINEPREFIX=${lib.escapeShellArg cfg.prefix}
-          export WINEARCH=win64
+          ${wineEnv}
 
           root='HKCU\Software\Image-Line\Shared\Plugins\Fruity Wrapper\Plugins'
           prefix='HKEY_CURRENT_USER\Software\Image-Line\Shared\Plugins\Fruity Wrapper\Plugins'
@@ -452,7 +469,7 @@
           example = "win11";
           description = ''
             Windows version reported to the prefix (HKCU\Software\Wine\Version).
-            The prefix was set up as Windows 7 by hand; most current plugin
+            A fresh prefix reports an old version; most current plugin
             installers and WebView2-based editors require at least Windows 10.
           '';
         };
@@ -504,74 +521,24 @@
         modules.homeManager.mango.apps = [ "fl-studio" ];
 
         home.persistence."/persistent".directories = [
-          ".config/yabridgectl"
           ".wine-flstudio"
-          "wineasio-dll"
         ];
 
+        # Only the user-facing commands go on PATH. The setup scripts, wine and
+        # winetricks are reached through the wrappers by store path, so bare
+        # `wine`/`winetricks` (which would use ~/.wine) are deliberately absent.
         home.packages = [
           flStudio
           flStudioWine
           flStudioTricks
           flStudioBridgedWindow
           flStudioDebug
-          prefixSetup
-          wineasioSetup
-          wineasio
-          wine
-          pkgs.winetricks
-          pkgs.yabridge
-          pkgs.yabridgectl
         ];
 
-        home.activation.flStudioPrefix = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-          $DRY_RUN_CMD ${prefixSetup}/bin/fl-studio-prefix-setup
-        '';
-
-        home.activation.flStudioWineAsio = lib.hm.dag.entryAfter [ "flStudioPrefix" ] ''
-          $DRY_RUN_CMD ${wineasioSetup}/bin/fl-studio-wineasio-setup
-        '';
-
-        # Wine's start-menu sync drops its own .desktop files into
-        # ~/.local/share/applications. They exec FL64.exe directly, so they skip
-        # the wrapper entirely -- no memlock raise, no PipeWire libjack, no
-        # self-heal -- and FL Studio then hangs on the ASIO deadlock. Disable
-        # them (reversibly) so the launcher only offers the managed entry.
-        home.activation.flStudioLauncherCleanup = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-          for entry in \
-            "$HOME/.local/share/applications/wine-protocol-flstudio.desktop" \
-            "$HOME/.local/share/applications/wine/Programs/Image-Line/FL Studio 2026.desktop"
-          do
-            if [ -e "$entry" ]; then
-              $DRY_RUN_CMD mv -f "$entry" "$entry.disabled"
-              echo "Disabled Wine-generated FL Studio launcher: $entry"
-            fi
-          done
-        '';
-
-        # Uses the absolute store path rather than bare "fl-studio" because a
-        # GUI session's PATH does not necessarily include the Home Manager
-        # profile's bin directory.
-        xdg.desktopEntries."fl-studio" = {
-          name = "FL Studio";
-          genericName = "Digital Audio Workstation";
-          comment = "Sequence, record and mix music";
-          exec = "${flStudio}/bin/fl-studio %U";
-          icon = "1010_FL64.0";
-          terminal = false;
-          type = "Application";
-          categories = [
-            "AudioVideo"
-            "Audio"
-            "Midi"
-          ];
-          mimeType = [ "x-scheme-handler/flstudio" ];
-        };
-
-        home.activation.flStudioYabridge = lib.hm.dag.entryAfter [ "flStudioWineAsio" ] ''
-          export WINEPREFIX=${lib.escapeShellArg cfg.prefix}
-          $DRY_RUN_CMD ${pkgs.yabridgectl}/bin/yabridgectl sync || true
-        '';
+        # No activation hooks: `fl-studio` runs the prefix and WineASIO setup
+        # (both idempotent) on every launch, so the prefix is created and
+        # repaired on first use rather than during `home-manager switch`.
+        # No .desktop entry either: launch it with the `fl-studio` command.
       };
     };
 }
