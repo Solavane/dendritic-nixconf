@@ -18,10 +18,14 @@ in
 
   flake.modules.homeManager."users-${userName}-${suffix}" = {
     imports = with flakeModules.homeManager; [
+      ark
       dolphin
+      imv
       keepassxc
       librewolf
+      mpv
       vscodium
+      zathura
     ];
   };
 }
