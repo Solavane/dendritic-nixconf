@@ -24,6 +24,7 @@ in
       davinci-resolve
       faugus
       #fl-studio
+      kitty
       obs
       prismlauncher
       roomeqwizard

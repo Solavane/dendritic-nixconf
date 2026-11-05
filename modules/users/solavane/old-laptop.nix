@@ -19,12 +19,14 @@ in
   flake.modules.homeManager."users-${userName}-${suffix}" = {
     imports = with flakeModules.homeManager; [
       foot
+      love
+      prusa-slicer
     ];
 
     modules.homeManager.syncthing = {
       enable = true;
       devices = [ "pixel-8-pro" ];
-      folders = "all";
+      folders = "secrets";
     };
   };
 }

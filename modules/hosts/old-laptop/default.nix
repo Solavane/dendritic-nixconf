@@ -45,16 +45,14 @@ in
       # System
       ./_hardware-configuration.nix
       desktop
-      flatpak
       hostConfig
       localsend
       network
       optimizations
-      steam
 
       #users
       users-solavane
-      users-solavane-desktop
+      users-solavane-desktop-core
       users-solavane-old-laptop
     ];
   };
