@@ -21,6 +21,7 @@ in
     imports = [ flakeModules.homeManager."users-${userName}-persist" ] ++ 
     (with flakeModules.homeManager; [
       blender
+      darktable
       davinci-resolve
       fl-studio
       inkscape

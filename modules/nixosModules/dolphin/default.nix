@@ -3,11 +3,11 @@
     modules.homeManager.mango.apps = [ "dolphin" ];
 
     home.persistence."/persistent".directories = [
-      ".local/share/dophin"
+      ".local/share/dolphin"
     ];
 
     home.persistence."/persistent".files = [
-      ".local/state/dophinstaterc"
+      ".local/state/dolphinstaterc"
     ];
 
     home.packages = [
