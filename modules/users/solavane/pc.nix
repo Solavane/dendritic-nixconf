@@ -24,6 +24,7 @@ in
       davinci-resolve
       fl-studio
       kitty
+      krita
       obs
       prismlauncher
 
