@@ -22,11 +22,14 @@ in
     modules = with config.flake.modules.nixos; [ (inputs.nixpkgs + "/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix") ]
     ++ [
       # System
-      desktop
       hostConfig
+
+      desktop
       installer
-      localsend
       optimizations
+
+      # Apps
+      localsend
 
       # Users
       users-solavane

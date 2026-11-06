@@ -35,7 +35,6 @@
         goToSong
         savePlaylists
         copyLyrics
-        starRatings
         allOfArtist
         aiBandBlocker
         sortPlay

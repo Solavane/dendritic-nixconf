@@ -22,12 +22,10 @@ in
     (with flakeModules.homeManager; [
       blender
       davinci-resolve
-      faugus
       fl-studio
       kitty
       obs
       prismlauncher
-      roomeqwizard
 
       flatpak
     ]);

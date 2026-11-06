@@ -44,13 +44,16 @@ in
     modules = with config.flake.modules.nixos; [
       # System
       ./_hardware-configuration.nix
-      desktop
       hostConfig
-      localsend
+
+      desktop
       network
       optimizations
 
-      #users
+      # Apps
+      localsend
+
+      # Users
       users-solavane
       users-solavane-desktop-core
       users-solavane-old-laptop

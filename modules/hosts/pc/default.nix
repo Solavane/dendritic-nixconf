@@ -37,22 +37,26 @@ in
     ] ++ (with config.flake.modules.nixos; [
       # System
       ./_hardware-configuration.nix
-      audio-latency
-      equalizer-monitor
-      #comfyui
+      hostConfig
+
       comma
       desktop
       equalizer-lcd-2c
-      flatpak
-      hostConfig
+      equalizer-monitor
       impermanence
-      localsend
       tpm2
-      nvidia
+      virtualization
+
+      # Optimizations
+      audio-latency
       optimizations
       optimizations-lact
+      nvidia
+
+      # Apps
+      flatpak
       steam
-      virtualization
+      localsend
 
       # Users
       users-solavane

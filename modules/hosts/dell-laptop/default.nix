@@ -178,9 +178,10 @@ in
       diskoConfig
     ] ++ (with config.flake.modules.nixos; [
       # System
+      hostConfig
+
       cli
       core
-      hostConfig
       network
       optimizations
 

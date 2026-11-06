@@ -10,14 +10,19 @@
 
     programs.vesktop = {
       enable = true;
+      
+      settings = {
+        arRPC = true;
+        checkUpdates = false;
+        minimizeToTray = true;
+        disableMinSize = true;
+      };
+
       vencord = {
         settings = {
           autoUpdate = false;
           autoUpdateNotification = false;
-          disableMinSize = true;
           notifyAboutUpdates = false;
-          minimizeToTray = true;
-          # Noctalia writes this file into ~/.config/vesktop/themes/.
           enabledThemes = [ "noctalia.theme.css" ];
           plugins = {
             AddAttachments.enabled = true;
@@ -42,9 +47,7 @@
             UserMessagesPronouns.enabled = true;
             ViewIcons.enabled = true;
             VoiceDownload.enabled = true;
-            VoulumeBooster = true;
-            WebKeybinds = true;
-            WebScreenShareFixes = true;
+            VolumeBooster.enabled = true;
             YoutubeAdblock.enabled = true;
             petpet.enabled = true;
           };

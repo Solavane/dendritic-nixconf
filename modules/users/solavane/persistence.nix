@@ -30,7 +30,6 @@ in
         ".config/autostart"
         ".config/kde"
         ".config/zsh"
-        ".gradle"
         ".java"
         ".local/share/color-schemes"
         ".local/share/fonts"
@@ -38,9 +37,7 @@ in
         ".local/share/themes"
         ".local/share/zsh"
         ".local/share/zoxide"
-        ".npm"
         ".nv"
-        ".ollama"
         ".pki"
         ".wine"
         
