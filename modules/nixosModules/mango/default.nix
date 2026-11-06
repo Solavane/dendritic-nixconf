@@ -233,6 +233,11 @@
         source_optional = [
           "${config.xdg.configHome}/mango/noctalia.conf"
         ];
+
+        env = [
+          "WLR_RENDERER,vulkan"
+          "WLR_DRM_NO_ATOMIC,0"
+        ];
       };
     };
   };
