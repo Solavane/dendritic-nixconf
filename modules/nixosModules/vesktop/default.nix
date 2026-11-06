@@ -16,6 +16,14 @@
         checkUpdates = false;
         minimizeToTray = true;
         disableMinSize = true;
+        
+        enableRoundedCorners = true;
+        enableSplashScreen = 0;
+
+        spellCheckLanguages = [
+          "english"
+          "swedish"
+        ];
       };
 
       vencord = {
@@ -24,6 +32,9 @@
           autoUpdateNotification = false;
           notifyAboutUpdates = false;
           enabledThemes = [ "noctalia.theme.css" ];
+
+          transparent = true;
+
           plugins = {
             AddAttachments.enabled = true;
             CallTimer.enabled = true;
@@ -52,6 +63,18 @@
             petpet.enabled = true;
           };
         };
+
+        # TODO: Change this shit
+        extraQuickCss = ''
+          :root {
+            --background-primary: rgba(43, 45, 49, 0.8) !important;
+            --background-secondary: rgba(30, 31, 34, 0.8) !important;
+            --background-tertiary: rgba(17, 18, 20, 0.8) !important;
+            --background-secondary-alt: rgba(43, 45, 49, 0.8) !important;
+            --chat-background: transparent !important;
+            --background-floating: rgba(22, 23, 25, 0.85) !important;
+          }
+        '';
       };
     };
   };
