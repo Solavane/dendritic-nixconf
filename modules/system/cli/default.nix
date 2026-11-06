@@ -36,6 +36,7 @@ in
         syntaxHighlighting.enable = true;
         dotDir = "${config.xdg.configHome}/zsh";
         shellAliases = import ./_aliases.nix;
+        histSize = 100000;
 
         setOptions = [
         ];

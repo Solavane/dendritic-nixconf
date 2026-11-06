@@ -4,6 +4,7 @@
 
     home.persistence."/persistent".directories = [
       ".config/librewolf"
+      ".librewolf"
       ".mozilla"
     ];
 
