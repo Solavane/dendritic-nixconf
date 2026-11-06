@@ -25,6 +25,7 @@ in
       fl-studio
       kitty
       krita
+      libresprite
       obs
       prismlauncher
 
