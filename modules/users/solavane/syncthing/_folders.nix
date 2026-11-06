@@ -10,4 +10,8 @@
       ".obsidian"
     ];
   };
+
+  wallpapers = {
+    path = "${home}/Pictures/Wallpapers";
+  };
 }

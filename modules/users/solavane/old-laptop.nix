@@ -27,7 +27,10 @@ in
     modules.homeManager.syncthing = {
       enable = true;
       devices = [ "pixel-8-pro" ];
-      folders = "secrets";
+      folders = [ 
+        "secrets" 
+        "wallpapers"
+      ];
     };
   };
 }
