@@ -95,6 +95,15 @@
         border_px = 3;
         border_radius = 12;
 
+        blur = 1;
+        blur_optimized = 1;
+        blur_params_radius = 3;
+        blur_params_noise = 0;
+        blur_params_brightness = 1;
+
+        shadows=1;
+        shadow_only_floating = true;
+
         cursor_size = 24;
         cursor_theme = "Adwaita";
 
