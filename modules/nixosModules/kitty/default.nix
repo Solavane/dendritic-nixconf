@@ -14,6 +14,10 @@
         
         #Appearance
         window_padding_width = 10;
+        font_size = 14;
+
+        dynamic_background_opacity = true;
+        background_opacity = "0.7";
 
         #Cursor trail
         cursor_trail = 1;

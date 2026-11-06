@@ -34,6 +34,7 @@ in
         enableCompletion = true;
         autosuggestion.enable = true;
         syntaxHighlighting.enable = true;
+        historySubstringSearch.enable = true;
         dotDir = "${config.xdg.configHome}/zsh";
         shellAliases = import ./_aliases.nix;
         history.size = 100000;
@@ -45,12 +46,15 @@ in
         nitch
         source ${config.xdg.configHome}/zsh/add-eq.sh
 
-        # Noctalia writes this theme file at runtime. Source it after the fzf
-        # integration so its FZF_DEFAULT_OPTS take precedence.
         if [[ -r "${config.xdg.configHome}/fzf/themes/noctalia.sh" ]]; then
           source "${config.xdg.configHome}/fzf/themes/noctalia.sh"
         fi
         '';
+
+        oh-my-zsh = {
+          enable = true;
+          theme = "refined";
+        };
       };
 
       btop = {
