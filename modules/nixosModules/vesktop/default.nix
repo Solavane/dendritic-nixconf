@@ -17,6 +17,8 @@
           disableMinSize = true;
           notifyAboutUpdates = false;
           minimizeToTray = true;
+          # Noctalia writes this file into ~/.config/vesktop/themes/.
+          enabledThemes = [ "noctalia.theme.css" ];
           plugins = {
             AddAttachments.enabled = true;
             CallTimer.enabled = true;

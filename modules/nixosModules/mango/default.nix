@@ -213,9 +213,10 @@
           "SUPER,btn_middle,togglemaximizescreen,0"
         ];
 
-        source = [
-          #"./noctalia.conf"
-          #"./monitors.conf"
+        # Noctalia writes ./noctalia.conf at runtime. source_optional keeps
+        # Mango working before the first template application.
+        source_optional = [
+          "${config.xdg.configHome}/mango/noctalia.conf"
         ];
       };
     };

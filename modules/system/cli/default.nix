@@ -36,7 +36,7 @@ in
         syntaxHighlighting.enable = true;
         dotDir = "${config.xdg.configHome}/zsh";
         shellAliases = import ./_aliases.nix;
-        histSize = 100000;
+        history.size = 100000;
 
         setOptions = [
         ];
@@ -44,6 +44,12 @@ in
         initContent = ''
         nitch
         source ${config.xdg.configHome}/zsh/add-eq.sh
+
+        # Noctalia writes this theme file at runtime. Source it after the fzf
+        # integration so its FZF_DEFAULT_OPTS take precedence.
+        if [[ -r "${config.xdg.configHome}/fzf/themes/noctalia.sh" ]]; then
+          source "${config.xdg.configHome}/fzf/themes/noctalia.sh"
+        fi
         '';
       };
 
@@ -54,6 +60,10 @@ in
             pkgs.btop-cuda
           else
             pkgs.btop;
+        # Noctalia generates ~/.config/btop/themes/noctalia.theme and its
+        # apply hook only selects it when btop.conf is writable. Keep the
+        # selection declarative so the read-only Home Manager config works.
+        settings.color_theme = "noctalia";
       };
 
       eza = {

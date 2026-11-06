@@ -59,7 +59,7 @@
       '';
 
       initLua = ''
-        local ok, m = pcall(require, "matugen")
+        local ok, m = pcall(require, 'matugen')
         if ok then m.setup() end
       '';
 

@@ -13,6 +13,7 @@
       mango
       obsidian
       pipewire
+      qt
     ];
 
     environment.systemPackages = with pkgs; [

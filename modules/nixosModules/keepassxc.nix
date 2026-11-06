@@ -1,5 +1,19 @@
 {
-  flake.modules.homeManager.keepassxc = { lib, pkgs, ... }: {
+  flake.modules.homeManager.keepassxc = { lib, pkgs, ... }:
+  let
+    # KeePassXC is a Qt5 application, while the session-wide platform theme
+    # is qt6ct. Give it its own qt5ct environment without affecting Qt6 apps.
+    keepassxc-themed = pkgs.symlinkJoin {
+      name = "keepassxc-qt5ct";
+      paths = [ pkgs.keepassxc ];
+      nativeBuildInputs = [ pkgs.makeWrapper ];
+      postBuild = ''
+        wrapProgram "$out/bin/keepassxc" \
+          --set QT_QPA_PLATFORMTHEME qt5ct
+      '';
+    };
+  in
+  {
     modules.homeManager.mango.apps = [ "keepassxc" ];
 
     home.persistence."/persistent".directories = [
@@ -9,6 +23,7 @@
     programs.keepassxc = {
       enable = true;
       autostart = false;
+      package = keepassxc-themed;
     };
 
     home.packages = [ pkgs.crudini ];

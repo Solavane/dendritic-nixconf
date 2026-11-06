@@ -20,10 +20,12 @@ in
     imports = with flakeModules.homeManager; [
       ark
       dolphin
+      gtk
       imv
       keepassxc
       librewolf
       mpv
+      qt
       vscodium
       zathura
     ];
