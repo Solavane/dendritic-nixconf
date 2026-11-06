@@ -23,6 +23,7 @@ in
       blender
       davinci-resolve
       fl-studio
+      inkscape
       kitty
       krita
       libresprite

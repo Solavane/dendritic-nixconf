@@ -5,7 +5,6 @@
     home.persistence."/persistent".directories = [
       ".config/vesktop"
       ".config/Vencord"
-      ".local/share/vesktop"
     ];
 
     programs.vesktop = {
@@ -17,7 +16,6 @@
         minimizeToTray = true;
         disableMinSize = true;
         
-        enableRoundedCorners = true;
         enableSplashScreen = 0;
 
         spellCheckLanguages = [
@@ -67,12 +65,21 @@
         # TODO: Change this shit
         extraQuickCss = ''
           :root {
-            --background-primary: rgba(43, 45, 49, 0.8) !important;
-            --background-secondary: rgba(30, 31, 34, 0.8) !important;
-            --background-tertiary: rgba(17, 18, 20, 0.8) !important;
-            --background-secondary-alt: rgba(43, 45, 49, 0.8) !important;
-            --chat-background: transparent !important;
-            --background-floating: rgba(22, 23, 25, 0.85) !important;
+            /* Keep a solid copy for text on colored elements */
+            --solid-bg-4: hsl(223, 14%, 10%) !important;
+
+            --bg-4: hsla(223, 14%, 10%, 0.4) !important;
+            --bg-3: hsla(223, 14%, 10%, 0.7) !important;
+          }
+
+          body {
+            --remove-bg-layer: off;
+            --transparency-tweaks: true;
+            --bg-floating: hsla(223, 14%, 10%, 0,7);  
+          }
+
+          members {
+              background: invisible !important;
           }
         '';
       };
