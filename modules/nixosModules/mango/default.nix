@@ -92,6 +92,12 @@
         no_border_when_single = 0;
         no_radius_when_single = 0;
 
+        border_px = 3;
+        border_radius = 12;
+
+        cursor_size = 24;
+        cursor_theme = "Adwaita";
+
         monitor_rule = [
           "name:DP-1,     width:2560, height:1440, refresh:240, x:0, y:0, vrr:0"
           "name:DP-2,     width:2560, height:1440, refresh:60, x:2560, y:0, vrr:0"
@@ -159,7 +165,7 @@
           "CTRL+SUPER,9,tag,9"
 
           # Overview
-          "SUPER,Tab,toggleoverview"
+          "SUPER,Tab,overcircle,next"
 
           # Window Focus
           "SUPER,Left,focusdir,left"
