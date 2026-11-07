@@ -30,6 +30,7 @@ in
       libresprite
       obs
       prismlauncher
+      roomeqwizard
 
       flatpak
     ]);
