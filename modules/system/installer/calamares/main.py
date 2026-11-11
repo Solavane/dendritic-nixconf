@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
+import getpass
 import os
+import pwd
 import re
 import shutil
 import subprocess
+import sys
 import traceback
 
 import libcalamares
@@ -14,6 +17,7 @@ USER_NAME = "@userName@"
 CONFIG_LOCATION = "@configLocation@"
 PERSISTENCE_ROOT = "@persistenceRoot@"
 HOSTS_DIRECTORY = "@hostsDirectory@"
+ZENITY = "@zenity@"
 
 WORK_DIR = "/tmp/solavane-installer"
 REPO_DIR = os.path.join(WORK_DIR, "repo")
@@ -26,6 +30,7 @@ INITRD_KEY_DIR = os.path.join(
     ROOT, PERSISTENCE_ROOT.lstrip("/"), "etc", "secrets", "initrd"
 )
 INITRD_KEY_FILE = os.path.join(INITRD_KEY_DIR, "ssh_host_ed25519_key")
+LUKS_PRESEED_FILE = "/run/solavane-installer-luks.passphrase"
 
 NEW_HOST_DEFAULT = """{
   config,
@@ -223,43 +228,105 @@ def _deobscure(value):
     return "".join(result)
 
 
+def _desktop_account():
+    try:
+        return pwd.getpwnam(USER_NAME)
+    except KeyError:
+        return None
+
+
 def _zenity(arguments):
+    env = os.environ.copy()
+    run_as = {}
+
+    # Calamares runs as root, but the GUI belongs to the desktop user. GTK
+    # refuses to talk to the user's Wayland/X11 session when it is launched as
+    # root, which makes zenity fail without showing anything. Drop back to the
+    # desktop user for the dialog.
+    if os.geteuid() == 0:
+        account = _desktop_account()
+        if account is not None:
+            env["HOME"] = account.pw_dir
+            env["USER"] = account.pw_name
+            env["LOGNAME"] = account.pw_name
+            run_as = {
+                "user": account.pw_uid,
+                "group": account.pw_gid,
+                "extra_groups": [],
+            }
+
     try:
         result = subprocess.run(
-            ["zenity", *arguments],
+            [ZENITY, *arguments],
             check=False,
             capture_output=True,
             text=True,
+            env=env,
+            **run_as,
         )
-    except OSError:
+    except OSError as error:
+        libcalamares.utils.debug(f"zenity could not start: {error}")
         return ""
 
     if result.returncode != 0:
+        message = (result.stderr or "").strip()
+        libcalamares.utils.debug(
+            f"zenity exited with status {result.returncode}"
+            + (f": {message}" if message else "")
+        )
         return ""
     return result.stdout.rstrip("\n")
 
 
-def _ask_password(title, text, environment_name):
+def _terminal_password(title, text):
+    try:
+        first = getpass.getpass(f"{title}: {text} ")
+        if not first:
+            return ""
+        second = getpass.getpass(f"{title}: {text} (confirm) ")
+    except (EOFError, KeyboardInterrupt):
+        return ""
+
+    return first if first == second else ""
+
+
+def _ask_password(title, text, environment_name, preseed_file=None):
     preset = os.environ.get(environment_name)
     if preset:
         return preset
 
-    for _ in range(3):
-        first = _zenity(["--password", f"--title={title}", f"--text={text}"])
-        if not first:
-            return ""
+    if preseed_file and os.path.isfile(preseed_file):
+        try:
+            with open(preseed_file, encoding="utf-8") as handle:
+                value = handle.read().rstrip("\n")
+        except OSError as error:
+            libcalamares.utils.debug(f"could not read {preseed_file}: {error}")
+        else:
+            if value:
+                return value
 
-        second = _zenity(["--password", f"--title={title}", f"--text={text} (confirm)"])
+    for _ in range(3):
+        first = _zenity(["--password", "--modal", f"--title={title}", f"--text={text}"])
+        if not first:
+            break
+
+        second = _zenity(
+            ["--password", "--modal", f"--title={title}", f"--text={text} (confirm)"]
+        )
         if first == second:
             return first
 
         _zenity(
             [
                 "--error",
+                "--modal",
                 f"--title={title}",
                 "--text=The passwords do not match.",
             ]
         )
+
+    if sys.stdin.isatty():
+        return _terminal_password(title, text)
 
     return ""
 
@@ -442,9 +509,14 @@ def _install():
         "Disk encryption",
         "Enter the disk encryption passphrase.",
         "SOLAVANE_LUKS_PASSPHRASE",
+        preseed_file=LUKS_PRESEED_FILE,
     )
     if not luks_password:
-        return _error("No encryption passphrase", "A disk encryption passphrase is required.")
+        return _error(
+            "No encryption passphrase",
+            "A disk encryption passphrase is required. "
+            f"You can also write it to {LUKS_PRESEED_FILE} before installing.",
+        )
 
     shutil.rmtree(WORK_DIR, ignore_errors=True)
     os.makedirs(WORK_DIR)

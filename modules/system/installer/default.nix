@@ -58,6 +58,7 @@ in
             "@configLocation@"
             "@persistenceRoot@"
             "@hostsDirectory@"
+            "@zenity@"
           ]
           [
             vars.repoUrl
@@ -66,6 +67,7 @@ in
             vars.configLocation
             vars.persistenceRoot
             vars.hostsDirectory
+            "${pkgs.zenity}/bin/zenity"
           ]
           (builtins.readFile ./calamares/main.py)
       );
@@ -116,6 +118,8 @@ in
         if [ -n "''${2-}" ]; then export XDG_RUNTIME_DIR="$2"; fi
         if [ -n "''${3-}" ]; then export DISPLAY="$3"; fi
         if [ -n "''${4-}" ]; then export XAUTHORITY="$4"; fi
+        if [ -n "''${5-}" ]; then export DBUS_SESSION_BUS_ADDRESS="$5"; fi
+        if [ -n "''${6-}" ]; then export XDG_SESSION_TYPE="$6"; fi
 
         export QT_QPA_PLATFORM="wayland;xcb"
 
@@ -143,7 +147,9 @@ in
           "''${WAYLAND_DISPLAY:-}" \
           "''${XDG_RUNTIME_DIR:-}" \
           "''${DISPLAY:-}" \
-          "''${XAUTHORITY:-}"
+          "''${XAUTHORITY:-}" \
+          "''${DBUS_SESSION_BUS_ADDRESS:-}" \
+          "''${XDG_SESSION_TYPE:-}"
       '';
     in
     {
