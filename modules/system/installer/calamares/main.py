@@ -22,6 +22,10 @@ PASS_FILE = os.path.join(WORK_DIR, "luks.key")
 ROOT = "/mnt"
 PASSWORD_DIR = os.path.join(ROOT, PERSISTENCE_ROOT.lstrip("/"), "secrets")
 PASSWORD_FILE = os.path.join(PASSWORD_DIR, USER_NAME + ".password")
+INITRD_KEY_DIR = os.path.join(
+    ROOT, PERSISTENCE_ROOT.lstrip("/"), "etc", "secrets", "initrd"
+)
+INITRD_KEY_FILE = os.path.join(INITRD_KEY_DIR, "ssh_host_ed25519_key")
 
 NEW_HOST_DEFAULT = """{
   config,
@@ -360,6 +364,34 @@ def _lock_root_password():
     _run(["nixos-enter", "--root", ROOT, "--command", "passwd -l root"])
 
 
+def _write_initrd_host_key():
+    """Generate the initrd-only SSH host key once and persist it.
+
+    The key must exist before nixos-install so the bootloader can append it to
+    the initrd as an initrd secret. Keeping it out of git avoids publishing a
+    key that could be used to impersonate the boot-time unlock prompt.
+    """
+    os.makedirs(INITRD_KEY_DIR, exist_ok=True)
+    os.chmod(INITRD_KEY_DIR, 0o700)
+
+    if not os.path.exists(INITRD_KEY_FILE):
+        _run(
+            [
+                "ssh-keygen",
+                "-t",
+                "ed25519",
+                "-N",
+                "",
+                "-C",
+                "initrd",
+                "-f",
+                INITRD_KEY_FILE,
+            ]
+        )
+
+    os.chmod(INITRD_KEY_FILE, 0o600)
+
+
 def _save_configuration():
     target = os.path.join(
         ROOT,
@@ -470,6 +502,7 @@ def _install():
 
     _set_status("Writing the user password.", 0.45)
     _write_user_password(user_password)
+    _write_initrd_host_key()
 
     global_storage.insert("rootMountPoint", ROOT)
     _set_status("Installing NixOS.", 0.5)

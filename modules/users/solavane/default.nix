@@ -34,6 +34,7 @@ in
 
     imports = with flakeModules.homeManager; [
       cli
+      mango-shortcuts
       syncthing
     ];
 

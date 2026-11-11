@@ -27,7 +27,6 @@
 
     home-manager.sharedModules = [
       config.flake.modules.homeManager.mango
-      config.flake.modules.homeManager.mango-shortcuts
     ];
   };
   

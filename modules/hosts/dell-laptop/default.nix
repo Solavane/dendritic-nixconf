@@ -31,6 +31,24 @@ let
           "usb_storage"
           "sd_mod"
         ];
+
+        # Remote LUKS unlock from the PC. The host key is generated once by the
+        # installer and stored on the persistent subvolume, so it survives the
+        # tmpfs root. systemd-boot appends it to the initrd as an initrd secret.
+        network = {
+          enable = true;
+          ssh = {
+            enable = true;
+            port = 2222;
+            hostKeys = [ "/persistent/etc/secrets/initrd/ssh_host_ed25519_key" ];
+          };
+        };
+
+        # DHCP in the initrd so sshd is reachable before the disk is unlocked.
+        systemd.network.networks."10-ethernet" = {
+          matchConfig.Type = "ether";
+          networkConfig.DHCP = "yes";
+        };
       };
 
       kernelModules = [ "kvm-intel" ];
@@ -116,57 +134,6 @@ let
       root.openssh.authorizedKeys.keyFiles = [ ./dell_laptop.pub ];
     };
   };
-
-  diskoConfig = {
-    disko.devices.disk.main = {
-      device = "/dev/nvme0n1";
-      type = "disk";
-      content = {
-        type = "gpt";
-        partitions = {
-          ESP = {
-            size = "512M";
-            type = "EF00";
-            content = {
-              type = "filesystem";
-              format = "vfat";
-              mountpoint = "/boot";
-            };
-          };
-          luks = {
-            size = "100%";
-            content = {
-              type = "luks";
-              name = "crypted";
-              settings.allowDiscards = true;
-              content = {
-                type = "btrfs";
-                extraArgs = [ "-f" ];
-                subvolumes = {
-                  "@" = {
-                    mountpoint = "/";
-                    mountOptions = [ "compress=zstd" "noatime" ];
-                  };
-                  "@home" = {
-                    mountpoint = "/home";
-                    mountOptions = [ "compress=zstd" "noatime" ];
-                  };
-                  "@nix" = {
-                    mountpoint = "/nix";
-                    mountOptions = [ "compress=zstd" "noatime" ];
-                  };
-                  "@swap" = {
-                    mountpoint = "/swap";
-                    swap.swapfile.size = "4G";
-                  };
-                };
-              };
-            };
-          };
-        };
-      };
-    };
-  };
 in
 {
   flake.nixosConfigurations."${hostName}" = inputs.nixpkgs.lib.nixosSystem {
@@ -175,19 +142,22 @@ in
 
     modules = [
       inputs.omniflake.flakes.disko.nixosModules.disko
-      diskoConfig
+      ./_disko.nix
     ] ++ (with config.flake.modules.nixos; [
       # System
       hostConfig
 
       cli
       core
+      impermanence
       network
       optimizations
+      tpm2
 
-      #users
+      # Users
       users-solavane
       users-solavane-dell-laptop
+      users-solavane-persist
     ]);
   };
 }
