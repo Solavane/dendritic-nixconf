@@ -48,6 +48,9 @@
     # Allows unprivileged processes to speak to privileged ones
     security.polkit.enable = true;
 
+    # Disable sudo lecture.
+    security.sudo.extraConfig = "Defaults lecture=never";
+
     environment.persistence."/persistent" = {
       directories = [
         "/var/lib/nixos"

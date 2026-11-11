@@ -18,7 +18,9 @@
 
     home.persistence."/persistent".directories = [
       ".config/keepassxc"
-      ".cache/keepassxc" ];
+      ".cache/keepassxc" 
+      ".local/state/keepassxc"
+    ];
 
     programs.keepassxc = {
       enable = true;

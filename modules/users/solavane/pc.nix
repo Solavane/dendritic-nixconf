@@ -28,6 +28,7 @@ in
       kitty
       krita
       libresprite
+      love
       obs
       prismlauncher
       roomeqwizard
